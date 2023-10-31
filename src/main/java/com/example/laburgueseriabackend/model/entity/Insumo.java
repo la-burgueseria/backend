@@ -1,10 +1,7 @@
 package com.example.laburgueseriabackend.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -12,6 +9,7 @@ import java.io.Serializable;
 @AllArgsConstructor // anotacion de lombok, genera un constructor con todos los argumentos de la clase
 @NoArgsConstructor //anotacion de lombok, genera un constructor vacio, sin argumentos
 @ToString //anotacion de lombok, genera el metodo ToString
+@Builder
 @Entity // anotacion que especifica que este modelo hace referencia a una entidad de la base de datos
 @Table(name = "insumo") // se especifica a que tabla hace referencia
 public class Insumo implements Serializable {
