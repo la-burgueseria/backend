@@ -2,10 +2,12 @@ package com.example.laburgueseriabackend.controller;
 
 import com.example.laburgueseriabackend.model.dto.InsumoDto;
 import com.example.laburgueseriabackend.model.entity.Insumo;
+import com.example.laburgueseriabackend.model.payload.MensajeResponse;
 import com.example.laburgueseriabackend.service.IInsumo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,56 +21,125 @@ public class InsumoController {
     @Autowired //inyeccion de dependencias del servicio
     private IInsumo insumoService;
 
+
+    //CREAR INSUMO
     @PostMapping("insumo") //rutaa para lanzar el evento post
     @ResponseStatus(HttpStatus.CREATED) //asignar códigos de respuesta http
-    public InsumoDto create(@RequestBody InsumoDto insumoDto){ //request body transforma el json enviado al objeto necesitado
-        Insumo insumoSave = insumoService.save(insumoDto);
+    public ResponseEntity<?> create(@RequestBody InsumoDto insumoDto){ //request body transforma el json enviado al objeto necesitado
 
-        return InsumoDto.builder()
-                .id(insumoSave.getId())
-                .nombre(insumoSave.getNombre())
-                .cantidad(insumoSave.getCantidad())
-                .build();
+        Insumo insumoSave = null;
+        try{
+            insumoSave = insumoService.save(insumoDto);
+
+            insumoDto =  InsumoDto.builder()
+                    .id(insumoSave.getId())
+                    .nombre(insumoSave.getNombre())
+                    .cantidad(insumoSave.getCantidad())
+                    .build();
+
+            return new ResponseEntity<>(MensajeResponse.builder()
+                    .mensaje("Guardado correctamente")
+                    .object(insumoDto)
+                    .build(), HttpStatus.CREATED) ;
+
+        }catch(DataAccessException exDt){
+            return new ResponseEntity<>(MensajeResponse.builder()
+                    .mensaje(exDt.getMessage())
+                    .object(null)
+                    .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+
     }
 
-    @PutMapping("insumo")
+
+    //ACTUALIZAR INSUMO
+    @PutMapping("insumo/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public InsumoDto update(@RequestBody InsumoDto insumoDto){
-        Insumo insumoUpdate = insumoService.save(insumoDto);
+    public ResponseEntity<?> update(@RequestBody InsumoDto insumoDto, @PathVariable Integer id){
+        Insumo insumoUpdate = null;
 
-        return InsumoDto.builder()
-                .id(insumoUpdate.getId())
-                .nombre(insumoUpdate.getNombre())
-                .cantidad(insumoUpdate.getCantidad())
-                .build();
+        try{
+            Insumo findInsumo = insumoService.findById(id);
+
+            if(findInsumo != null){
+                Integer stockInsumo = findInsumo.getCantidad() + insumoDto.getCantidad();
+                insumoDto.setCantidad(stockInsumo);
+
+                insumoUpdate = insumoService.save(insumoDto);
+
+                insumoDto =  InsumoDto.builder()
+                        .id(insumoUpdate.getId())
+                        .nombre(insumoUpdate.getNombre())
+                        .cantidad(insumoUpdate.getCantidad())
+                        .build();
+
+                return new ResponseEntity<>(MensajeResponse.builder()
+                        .mensaje("Actualizado correctamente")
+                        .object(insumoDto)
+                        .build(), HttpStatus.CREATED) ;
+            }
+
+        }catch(DataAccessException exDt){
+            return new ResponseEntity<>(MensajeResponse.builder()
+                    .mensaje(exDt.getMessage())
+                    .object(null)
+                    .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
+    //ELIMINAR INSUMO
     @DeleteMapping("insumo/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id){ //recibe el parametro enviado por url
     //ResponseEntity maneja toda la respuesta HTTP incluyendo el cuerpo
     //cabecera y códigos de estado lo que permite libertad para configurar la respuesta enviada
-        Map<String, Object> response = new HashMap<>();
+
         try{
             Insumo insumoDelete = insumoService.findById(id);
             insumoService.delete(insumoDelete);
             return new ResponseEntity<>(insumoDelete, HttpStatus.NO_CONTENT);
         }catch(DataAccessException exDt){
-            response.put("mensaje", exDt.getMessage());
-            response.put("insumo", null);
 
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(MensajeResponse
+                        .builder()
+                        .mensaje(exDt.getMessage())
+                        .object(null)
+                        .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("insumo/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public InsumoDto showById(@PathVariable Integer id){
+    public ResponseEntity<?> showById(@PathVariable Integer id){
         Insumo insumo =  insumoService.findById(id);
 
-        return InsumoDto.builder()
+        if(insumo == null){
+            return new ResponseEntity<>(MensajeResponse
+                    .builder()
+                    .mensaje("Registro no encontrado")
+                    .object(null)
+                    .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        InsumoDto insumoDto =  InsumoDto.builder()
                 .id(insumo.getId())
                 .nombre(insumo.getNombre())
                 .cantidad(insumo.getCantidad())
                 .build();
+
+        return new ResponseEntity<>(MensajeResponse
+                .builder()
+                .mensaje("OK")
+                .object(insumoDto)
+                .build()
+                , HttpStatus.FOUND  
+        );
+
+
     }
 }
