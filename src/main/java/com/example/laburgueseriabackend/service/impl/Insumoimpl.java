@@ -1,6 +1,7 @@
 package com.example.laburgueseriabackend.service.impl;
 
 import com.example.laburgueseriabackend.model.dao.InsumoDao;
+import com.example.laburgueseriabackend.model.dto.InsumoDto;
 import com.example.laburgueseriabackend.model.entity.Insumo;
 import com.example.laburgueseriabackend.service.IInsumo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,16 @@ public class Insumoimpl implements IInsumo {
 
     @Transactional
     @Override
-    public Insumo save(Insumo insumo) {
+    public Insumo save(InsumoDto insumoDto) {
+        // Al usar los DTO evitamos que nuestra entity
+        //este directamente expuesta al response body por lo cual nos brinda mayor seguridad
+        // por lo cual usamos el DTO y luego con la información del dto creamos nuestro
+        //"VERDADERO" modelo
+        Insumo insumo = Insumo.builder()
+                .id(insumoDto.getId())
+                .nombre(insumoDto.getNombre())
+                .cantidad(insumoDto.getCantidad())
+                .build();
         //implementacion del metodo de CrudRepository
         //el save() tiene dos funciones = guardar registro y actualizar registro
         return insumoDao.save(insumo);
@@ -35,6 +45,7 @@ public class Insumoimpl implements IInsumo {
     @Transactional
     @Override
     public void delete(Insumo insumo) {
+        //se elimina el insumo
         insumoDao.delete(insumo);
     }
 }
