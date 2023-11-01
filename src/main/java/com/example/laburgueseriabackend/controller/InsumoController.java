@@ -64,9 +64,6 @@ public class InsumoController {
             Insumo findInsumo = insumoService.findById(id);
 
             if(findInsumo != null){
-                Integer stockInsumo = findInsumo.getCantidad() + insumoDto.getCantidad();
-                insumoDto.setCantidad(stockInsumo);
-
                 insumoUpdate = insumoService.save(insumoDto);
 
                 insumoDto =  InsumoDto.builder()
@@ -74,12 +71,11 @@ public class InsumoController {
                         .nombre(insumoUpdate.getNombre())
                         .cantidad(insumoUpdate.getCantidad())
                         .build();
-
-                return new ResponseEntity<>(MensajeResponse.builder()
-                        .mensaje("Actualizado correctamente")
-                        .object(insumoDto)
-                        .build(), HttpStatus.CREATED) ;
             }
+            return new ResponseEntity<>(MensajeResponse.builder()
+                    .mensaje("Actualizado correctamente")
+                    .object(insumoDto)
+                    .build(), HttpStatus.CREATED) ;
 
         }catch(DataAccessException exDt){
             return new ResponseEntity<>(MensajeResponse.builder()

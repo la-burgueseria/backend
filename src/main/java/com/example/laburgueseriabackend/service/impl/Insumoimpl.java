@@ -48,4 +48,11 @@ public class Insumoimpl implements IInsumo {
         //se elimina el insumo
         insumoDao.delete(insumo);
     }
+
+    @Transactional
+    @Override
+    public Insumo buscarInsumoByNombre(Insumo){
+        //busca un registro con el mismo nombre
+        return insumoDao.buscarInsumoByNombre();
+    }
 }
