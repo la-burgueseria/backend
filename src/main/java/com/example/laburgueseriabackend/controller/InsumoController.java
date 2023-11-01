@@ -3,23 +3,45 @@ package com.example.laburgueseriabackend.controller;
 import com.example.laburgueseriabackend.model.dto.InsumoDto;
 import com.example.laburgueseriabackend.model.entity.Insumo;
 import com.example.laburgueseriabackend.model.payload.MensajeResponse;
-import com.example.laburgueseriabackend.service.IInsumo;
+import com.example.laburgueseriabackend.service.IInsumoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @RestController //especificar que esta clase es un controller
 @RequestMapping("/api/v1") //asignacion de la ruta para ser consumido
 public class InsumoController {
 
     @Autowired //inyeccion de dependencias del servicio
-    private IInsumo insumoService;
+    private IInsumoService insumoService;
+
+    //LISTAR TODOS LOS INSUMOS
+    @GetMapping("insumos")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> showAll(){
+        List<Insumo> insumos = insumoService.listAll();
+
+        if(insumos == null){
+            return new ResponseEntity<>(MensajeResponse
+                    .builder()
+                    .mensaje("No hay registros en el sistema")
+                    .object(null)
+                    .build()
+                    , HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(MensajeResponse
+                .builder()
+                .mensaje("OK")
+                .object(insumos)
+                .build()
+                , HttpStatus.OK
+        );
+    }
 
 
     //CREAR INSUMO
@@ -28,19 +50,57 @@ public class InsumoController {
     public ResponseEntity<?> create(@RequestBody InsumoDto insumoDto){ //request body transforma el json enviado al objeto necesitado
 
         Insumo insumoSave = null;
+        Insumo insumoExists = null;
         try{
-            insumoSave = insumoService.save(insumoDto);
+            //validar si un insumo del mismo nombre ya se encuentra registrado
+            insumoExists = insumoService.findByNombre(insumoDto.getNombre());
+            //en caso de que exista
+            if(insumoExists != null){
+                Integer cantidadExistencia = insumoExists.getCantidad() + insumoDto.getCantidad();
 
-            insumoDto =  InsumoDto.builder()
-                    .id(insumoSave.getId())
-                    .nombre(insumoSave.getNombre())
-                    .cantidad(insumoSave.getCantidad())
-                    .build();
+                insumoExists.setCantidad(cantidadExistencia);
+                Integer id1 = insumoDto.getId();
+                Integer id2 = insumoExists.getId();
 
-            return new ResponseEntity<>(MensajeResponse.builder()
-                    .mensaje("Guardado correctamente")
-                    .object(insumoDto)
-                    .build(), HttpStatus.CREATED) ;
+
+                insumoDto =  InsumoDto.builder()
+                        .id(insumoExists.getId())
+                        .nombre(insumoExists.getNombre())
+                        .cantidad(insumoExists.getCantidad())
+                        .build();
+
+                insumoSave = insumoService.save(insumoDto);
+
+
+                /*
+                * insumoDto =  InsumoDto.builder()
+                        .id(insumoSave.getId())
+                        .nombre(insumoSave.getNombre())
+                        .cantidad(insumoSave.getCantidad())
+                        .build();
+                 **/
+
+                return new ResponseEntity<>(MensajeResponse.builder()
+                        .mensaje("Registro ya existia anteriormente, se han sumado las existencias Id del insumo enviado por body: " + id1
+                                + " Id del insumo consultado: " + id2)
+                        .object(insumoDto)
+                        .build(), HttpStatus.CREATED) ;
+            }
+            else{
+                insumoSave = insumoService.save(insumoDto);
+
+                insumoDto =  InsumoDto.builder()
+                        .id(insumoSave.getId())
+                        .nombre(insumoSave.getNombre())
+                        .cantidad(insumoSave.getCantidad())
+                        .build();
+
+                return new ResponseEntity<>(MensajeResponse.builder()
+                        .mensaje("Guardado correctamente")
+                        .object(insumoDto)
+                        .build(), HttpStatus.CREATED) ;
+            }
+
 
         }catch(DataAccessException exDt){
             return new ResponseEntity<>(MensajeResponse.builder()
@@ -61,22 +121,29 @@ public class InsumoController {
         Insumo insumoUpdate = null;
 
         try{
-            Insumo findInsumo = insumoService.findById(id);
 
-            if(findInsumo != null){
+            if(insumoService.existsById(insumoDto.getId())){
+                insumoDto.setId(id);
                 insumoUpdate = insumoService.save(insumoDto);
 
-                insumoDto =  InsumoDto.builder()
-                        .id(insumoUpdate.getId())
-                        .nombre(insumoUpdate.getNombre())
-                        .cantidad(insumoUpdate.getCantidad())
-                        .build();
+                return new ResponseEntity<>(MensajeResponse.builder()
+                        .mensaje("Actualizado correctamente")
+                        .object(InsumoDto.builder()
+                                .id(insumoUpdate.getId())
+                                .nombre(insumoUpdate.getNombre())
+                                .cantidad(insumoUpdate.getCantidad())
+                                .build())
+                        .build()
+                        , HttpStatus.CREATED
+                );
+            }else{
+                return new ResponseEntity<>(MensajeResponse.builder()
+                        .mensaje("Registro no encontrado en la base de datos")
+                        .object(null)
+                        .build()
+                        , HttpStatus.NOT_FOUND
+                );
             }
-            return new ResponseEntity<>(MensajeResponse.builder()
-                    .mensaje("Actualizado correctamente")
-                    .object(insumoDto)
-                    .build(), HttpStatus.CREATED) ;
-
         }catch(DataAccessException exDt){
             return new ResponseEntity<>(MensajeResponse.builder()
                     .mensaje(exDt.getMessage())
@@ -133,9 +200,7 @@ public class InsumoController {
                 .mensaje("OK")
                 .object(insumoDto)
                 .build()
-                , HttpStatus.FOUND  
+                , HttpStatus.OK
         );
-
-
     }
 }

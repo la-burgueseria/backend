@@ -3,16 +3,18 @@ package com.example.laburgueseriabackend.service.impl;
 import com.example.laburgueseriabackend.model.dao.InsumoDao;
 import com.example.laburgueseriabackend.model.dto.InsumoDto;
 import com.example.laburgueseriabackend.model.entity.Insumo;
-import com.example.laburgueseriabackend.service.IInsumo;
+import com.example.laburgueseriabackend.service.IInsumoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 //se implementa la interfaz donde se declararon los metodos
 //se especifica que esta clase sera un service
 //se implementa el Dao para vincular nuestros metodos con los dclarados en el Dao
 @Service
-public class Insumoimpl implements IInsumo {
+public class InsumoImplService implements IInsumoService {
 
     @Autowired
     private InsumoDao insumoDao;
@@ -51,8 +53,22 @@ public class Insumoimpl implements IInsumo {
 
     @Transactional
     @Override
-    public Insumo buscarInsumoByNombre(Insumo){
+    public Insumo findByNombre(String nombre){
         //busca un registro con el mismo nombre
-        return insumoDao.buscarInsumoByNombre();
+        return insumoDao.findByNombre(nombre);
+    }
+
+    @Override
+    public Boolean existsById(Integer id) {
+        return insumoDao.existsById(id);
+    }
+
+    @Override
+    public List<Insumo> listAll() {
+        //listar todos los insumos almacenados
+        //PENDIENTE VOLVERLO UNA PAGINACION
+        //Este metodo devuelve un Iterable
+        //por lo cual se convierte a list usando (List)
+        return (List) insumoDao.findAll();
     }
 }

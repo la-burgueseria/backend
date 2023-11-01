@@ -15,5 +15,5 @@ public interface InsumoDao extends CrudRepository<Insumo, Integer> {
     //buscar insumo por nombre
     //para que al momento de crear no hayan dos repetidos
     @Query("SELECT i FROM Insumo  i WHERE i.nombre = :nombre")
-    Insumo buscarInsumoByNombre(String nombre);
+    Insumo findByNombre(String nombre);
 }
