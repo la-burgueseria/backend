@@ -58,11 +58,13 @@ public class InsumoImplService implements IInsumoService {
         return insumoDao.findByNombre(nombre);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Boolean existsById(Integer id) {
         return insumoDao.existsById(id);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Insumo> listAll() {
         //listar todos los insumos almacenados
