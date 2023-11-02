@@ -71,15 +71,6 @@ public class InsumoController {
 
                 insumoSave = insumoService.save(insumoDto);
 
-
-                /*
-                * insumoDto =  InsumoDto.builder()
-                        .id(insumoSave.getId())
-                        .nombre(insumoSave.getNombre())
-                        .cantidad(insumoSave.getCantidad())
-                        .build();
-                 **/
-
                 return new ResponseEntity<>(MensajeResponse.builder()
                         .mensaje("Registro ya existia anteriormente, se han sumado las existencias Id del insumo enviado por body: " + id1
                                 + " Id del insumo consultado: " + id2)
