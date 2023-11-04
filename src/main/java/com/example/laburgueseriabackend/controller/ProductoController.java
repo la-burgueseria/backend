@@ -1,7 +1,6 @@
 package com.example.laburgueseriabackend.controller;
 
 import com.example.laburgueseriabackend.model.dto.CategoriaProductoDto;
-import com.example.laburgueseriabackend.model.dto.InsumoDto;
 import com.example.laburgueseriabackend.model.dto.ProductoDto;
 import com.example.laburgueseriabackend.model.entity.Producto;
 import com.example.laburgueseriabackend.model.payload.MensajeResponse;
@@ -125,7 +124,7 @@ public class ProductoController {
     public ResponseEntity<?> showAll(){
         List<Producto> productos = productoService.listAll();
 
-        if(productos == null){
+        if(productos.isEmpty()){
             return new ResponseEntity<>(
                     MensajeResponse.builder()
                             .mensaje("No hay registros en el sistema")
