@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @ToString
@@ -17,4 +18,5 @@ public class ProductoDto implements Serializable {
     private String imagen;
     private String descripcion;
     private CategoriaProductoDto categoriaProductoDto;
+    private List<InsumosPorProductoDto> insumosPorProductosDto;
 }
