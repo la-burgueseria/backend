@@ -2,6 +2,7 @@ package com.example.laburgueseriabackend.controller;
 
 
 import com.example.laburgueseriabackend.model.dto.CategoriaProductoDto;
+import com.example.laburgueseriabackend.model.dto.ProductoDto;
 import com.example.laburgueseriabackend.model.entity.CategoriaProducto;
 import com.example.laburgueseriabackend.model.payload.MensajeResponse;
 import com.example.laburgueseriabackend.service.ICategoriaProductoService;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 //CONTROLLER CATEGORIAS DE PRODUCTOS
@@ -26,26 +28,39 @@ public class CategoriaProductoController {
     @GetMapping("categorias-productos")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> showAll(){
-        List<CategoriaProducto> categoriasProductos = categoriaProductoService.listAll();
 
-        //en caso de no haber registros
-        if(categoriasProductos == null){
+        try{
+            List<CategoriaProducto> categoriasProductos = categoriaProductoService.listAll();
+            //en caso de no haber registros
+            if(categoriasProductos == null){
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("No existen registros actualmente")
+                                .object(null)
+                                .build()
+                        , HttpStatus.OK
+                );
+            }
+            //En caso de haber registros retorna la lista
             return new ResponseEntity<>(
                     MensajeResponse.builder()
-                            .mensaje("No existen registros actualmente")
+                            .mensaje("Ok")
+                            .object(categoriasProductos)
+                            .build()
+                    , HttpStatus.OK
+            );
+        }catch (DataAccessException exDt){
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje(exDt.getMessage())
                             .object(null)
                             .build()
-                            , HttpStatus.OK
+                    , HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
-        //En caso de haber registros retorna la lista
-        return new ResponseEntity<>(
-                MensajeResponse.builder()
-                        .mensaje("Ok")
-                        .object(categoriasProductos)
-                        .build()
-                        , HttpStatus.OK
-        );
+
+
+
     }
 
     //CREAR NUEVA CATEGORIA
@@ -197,10 +212,11 @@ public class CategoriaProductoController {
                                         CategoriaProductoDto.builder()
                                                 .id(categoriaProducto.getId())
                                                 .nombre(categoriaProducto.getNombre())
+                                                .productos(categoriaProducto.getProductos())
                                                 .build()
                                 )
                                 .build()
-                        , HttpStatus.FOUND
+                        , HttpStatus.OK
                 );
             }
             return new ResponseEntity<>(MensajeResponse
@@ -208,7 +224,7 @@ public class CategoriaProductoController {
                     .mensaje("Registro no encontrado")
                     .object(null)
                     .build()
-                    , HttpStatus.INTERNAL_SERVER_ERROR);
+                    , HttpStatus.NOT_FOUND);
 
         }catch (DataAccessException exdt){
             return new ResponseEntity<>(
