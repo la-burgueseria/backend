@@ -2,10 +2,12 @@ package com.example.laburgueseriabackend.model.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -30,6 +32,8 @@ public class Producto implements Serializable {
     @ManyToOne
     @JoinColumn(name = "categoria_producto_id")
     private CategoriaProducto categoriaProducto;
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<InsumosPorProducto> insumosPorProductos;
 
 
     //IMPORTANTE CREAR EL GETTER DEL LA CONEXION para indicar las referencias
@@ -37,5 +41,11 @@ public class Producto implements Serializable {
     @JsonBackReference
     public CategoriaProducto getCategoriaProducto(){
         return categoriaProducto;
+    }
+
+    //referencia a insumos pro producto
+    @JsonManagedReference
+    public  List<InsumosPorProducto> getInsumosPorProductos(){
+        return insumosPorProductos;
     }
 }
