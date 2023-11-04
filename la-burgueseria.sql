@@ -1,5 +1,3 @@
-
-
 CREATE TABLE `usuario` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `documento` varchar(12),
@@ -45,9 +43,9 @@ CREATE TABLE `producto` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `nombre` varchar(60),
   `precio` double,
-  `categoria_producto_id` int,
   `imagen` varchar(250),
-  `descripcion` varchar(100)
+  `descripcion` varchar(100),
+  `categoria_producto_id` int
 );
 
 CREATE TABLE `mesero` (
@@ -59,6 +57,7 @@ CREATE TABLE `mesero` (
 
 CREATE TABLE `mesa` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
+  `num_mesa` int,
   `qr_id` int,
   `estado_mesa_id` int
 );
@@ -87,7 +86,7 @@ CREATE TABLE `productos_por_mesa` (
 
 CREATE TABLE `cuenta` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `productos_por_mesa_id` int,
+  `mesa_id` int,
   `mesero_id` int,
   `total` int,
   `estado_cuenta` int,
@@ -111,7 +110,8 @@ CREATE TABLE `egreso` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `fecha` timestamp,
   `total` int,
-  `tipo_egreso` int
+  `tipo_egreso` int,
+  `adelanto_id` int
 );
 
 CREATE TABLE `tipo_egreso` (
@@ -119,14 +119,14 @@ CREATE TABLE `tipo_egreso` (
   `nombre` varchar(20)
 );
 
-CREATE TABLE `nomina_semanal` (
+CREATE TABLE `pago` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `dias_laborados` int,
   `fecha_inicio` date,
   `fecha_fin` date,
   `mesero_id` int,
   `salario_diario` int,
-  `adelanto` int,
+  `adelanto_id` int,
   `total` int
 );
 
@@ -137,6 +137,13 @@ CREATE TABLE `reporte_mensual` (
   `fecha_inicio` date,
   `fecha_fin` date,
   `ruta` varchar(250)
+);
+
+CREATE TABLE `adelanto` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `cantidad` double,
+  `mesero_id` int,
+  `estado` varchar(20)
 );
 
 ALTER TABLE `usuario` ADD FOREIGN KEY (`rol_id`) REFERENCES `rol` (`id`);
@@ -159,11 +166,11 @@ ALTER TABLE `productos_por_mesa` ADD FOREIGN KEY (`producto_id`) REFERENCES `pro
 
 ALTER TABLE `productos_por_mesa` ADD FOREIGN KEY (`mesa_id`) REFERENCES `mesa` (`id`);
 
-ALTER TABLE `cuenta` ADD FOREIGN KEY (`productos_por_mesa_id`) REFERENCES `productos_por_mesa` (`id`);
-
 ALTER TABLE `cuenta` ADD FOREIGN KEY (`estado_cuenta`) REFERENCES `estado_cuenta` (`id`);
 
 ALTER TABLE `cuenta` ADD FOREIGN KEY (`mesero_id`) REFERENCES `mesero` (`id`);
+
+ALTER TABLE `cuenta` ADD FOREIGN KEY (`mesa_id`) REFERENCES `mesa` (`id`);
 
 ALTER TABLE `reporte_mensual` ADD FOREIGN KEY (`egreso_id`) REFERENCES `egreso` (`id`);
 
@@ -173,6 +180,10 @@ ALTER TABLE `egreso` ADD FOREIGN KEY (`tipo_egreso`) REFERENCES `tipo_egreso` (`
 
 ALTER TABLE `ingreso` ADD FOREIGN KEY (`cuenta_id`) REFERENCES `cuenta` (`id`);
 
-ALTER TABLE `nomina_semanal` ADD FOREIGN KEY (`adelanto`) REFERENCES `egreso` (`id`);
+ALTER TABLE `pago` ADD FOREIGN KEY (`mesero_id`) REFERENCES `mesero` (`id`);
 
-ALTER TABLE `nomina_semanal` ADD FOREIGN KEY (`mesero_id`) REFERENCES `mesero` (`id`);
+ALTER TABLE `pago` ADD FOREIGN KEY (`adelanto_id`) REFERENCES `adelanto` (`id`);
+
+ALTER TABLE `egreso` ADD FOREIGN KEY (`adelanto_id`) REFERENCES `adelanto` (`id`);
+
+ALTER TABLE `adelanto` ADD FOREIGN KEY (`mesero_id`) REFERENCES `reporte_mensual` (`id`);
