@@ -71,7 +71,6 @@ public class ProductoController {
     }
 
     //BUSCAR PRODUCTO POR ID
-    @Transactional(readOnly = true)
     @GetMapping("producto/{id}")
     @ResponseStatus(HttpStatus.FOUND)
     public ResponseEntity<?> showById(@PathVariable Integer id){

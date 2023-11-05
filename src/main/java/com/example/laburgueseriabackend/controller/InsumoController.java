@@ -113,7 +113,7 @@ public class InsumoController {
 
         try{
 
-            if(insumoService.existsById(insumoDto.getId())){
+            if(insumoService.existsById(id)){
                 insumoDto.setId(id);
                 insumoUpdate = insumoService.save(insumoDto);
 

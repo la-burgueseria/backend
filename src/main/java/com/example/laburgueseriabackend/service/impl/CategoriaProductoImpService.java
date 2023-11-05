@@ -4,6 +4,7 @@ import com.example.laburgueseriabackend.model.dao.CategoriaProductoDao;
 import com.example.laburgueseriabackend.model.dto.CategoriaProductoDto;
 import com.example.laburgueseriabackend.model.entity.CategoriaProducto;
 import com.example.laburgueseriabackend.service.ICategoriaProductoService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,7 @@ public class CategoriaProductoImpService implements ICategoriaProductoService {
 
     //GUARDAR
     @Override
-    public CategoriaProducto save(CategoriaProductoDto categoriaProductoDto) {
+    public CategoriaProducto save(@NotNull CategoriaProductoDto categoriaProductoDto) {
 
         //construir nuestra entridad con el dto que entra a la funcion
         CategoriaProducto categoriaProducto = CategoriaProducto.builder()
@@ -45,7 +46,7 @@ public class CategoriaProductoImpService implements ICategoriaProductoService {
     @Transactional(readOnly = true)
     @Override
     public List<CategoriaProducto> listAll() {
-        return (List) categoriaProductoDao.findAll();
+        return (List<CategoriaProducto>) categoriaProductoDao.findAll();
     }
 
     @Transactional
