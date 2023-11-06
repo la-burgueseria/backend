@@ -24,4 +24,5 @@ public class CuentaDto {
     private List<CuentaProductos> cuentaProductos;
     @JsonIgnore
     private String fecha;
+
 }

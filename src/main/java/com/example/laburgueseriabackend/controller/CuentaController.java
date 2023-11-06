@@ -67,7 +67,6 @@ public class CuentaController {
                             .object(
                                     Cuenta.builder()
                                             .id(cuentaDto.getId())
-                                            .total(cuentaSave.getTotal())
                                             .fecha(cuentaSave.getFecha())
                                             .estadoCuenta(cuentaDto.getEstadoCuenta())
                                             .mesa(cuentaDto.getMesa())
@@ -83,6 +82,112 @@ public class CuentaController {
                             .mensaje(exDt.getMessage())
                             .object(null)
                             .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    //buscar por id
+    @GetMapping("cuenta/{id}")
+    @ResponseStatus(HttpStatus.FOUND)
+    public ResponseEntity<?> showById(@PathVariable Integer id){
+        try{
+            Cuenta cuenta = cuentaService.findById(id);
+
+            if(cuenta != null){
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("OK")
+                                .object(
+                                        CuentaDto.builder()
+                                                .id(cuenta.getId())
+                                                .estadoCuenta(cuenta.getEstadoCuenta())
+                                                .cuentaProductos(cuenta.getCuentaProductos())
+                                                .mesa(cuenta.getMesa())
+                                                .fecha(cuenta.getFecha())
+                                                .build()
+                                )
+                                .build()
+                        , HttpStatus.FOUND
+                );
+            }
+            return new ResponseEntity<>(MensajeResponse
+                    .builder()
+                    .mensaje("Registro no encontrado")
+                    .object(null)
+                    .build()
+                    , HttpStatus.CONFLICT);
+        }catch (DataAccessException exDt){
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje(exDt.getMessage())
+                            .object(null)
+                            .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+    //eliminar cuenta
+    @DeleteMapping("cuenta/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<?> delete(@PathVariable Integer id){
+        try{
+            Cuenta cuentaDelete = cuentaService.findById(id);
+            cuentaService.delete(cuentaDelete);
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje("cuenta eliminada correctamente")
+                            .object(cuentaDelete)
+                            .build()
+                    , HttpStatus.NO_CONTENT
+            );
+        }catch (DataAccessException exDt){
+            return new ResponseEntity<>(MensajeResponse
+                    .builder()
+                    .mensaje(exDt.getMessage())
+                    .object(null)
+                    .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    //ACTUALIZAR CUENTA
+    @PutMapping("cuenta/{id}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> update(@RequestBody CuentaDto cuentaDto, @PathVariable Integer id){
+        Cuenta cuentaUpdate = null;
+
+        try{
+            if(cuentaService.existsById(id)){
+                cuentaDto.setId(id);
+                cuentaUpdate = cuentaService.save(cuentaDto);
+
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("Cuenta actualizada correctamente")
+                                .object(
+                                        CuentaDto.builder()
+                                                .id(cuentaUpdate.getId())
+                                                .estadoCuenta(cuentaUpdate.getEstadoCuenta())
+                                                .cuentaProductos(cuentaUpdate.getCuentaProductos())
+                                                .mesa(cuentaUpdate.getMesa())
+                                                .fecha(cuentaUpdate.getFecha())
+                                                .build()
+                                )
+                                .build()
+                        , HttpStatus.CREATED
+                );
+            }
+            return new ResponseEntity<>(MensajeResponse.builder()
+                    .mensaje("Registro no encontrado en la base de datos")
+                    .object(null)
+                    .build()
+                    , HttpStatus.NOT_FOUND
+            );
+        }catch(DataAccessException exDt){
+            return new ResponseEntity<>(MensajeResponse.builder()
+                    .mensaje(exDt.getMessage())
+                    .object(null)
+                    .build()
                     , HttpStatus.INTERNAL_SERVER_ERROR
             );
         }

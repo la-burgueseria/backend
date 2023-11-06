@@ -23,8 +23,7 @@ public class Cuenta implements Serializable {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "total")
-    private Double total;
+
     @Column(name = "fecha")
     private String fecha;
     // ORGANIZAR RELACION ENTRE CUENTA Y PRODUCTOS CON LA ENTIDAD INTERMEDIA

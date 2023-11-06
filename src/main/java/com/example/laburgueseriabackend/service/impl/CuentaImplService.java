@@ -20,8 +20,6 @@ public class CuentaImplService implements ICuentaService {
     private CuentaDao cuentaDao;
     @Override
     public Cuenta save(@NotNull CuentaDto cuentaDto) {
-        //sumar el total de los productos
-        double total = 0;
         //fecha
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         String fechaFormateada = dateFormat.format(new Date()); // Obtiene la fecha y hora actual formateada
@@ -29,7 +27,6 @@ public class CuentaImplService implements ICuentaService {
 
         Cuenta cuenta = Cuenta.builder()
                 .id(cuentaDto.getId())
-                .total(total)
                 .fecha(fechaFormateada)
                 .estadoCuenta(cuentaDto.getEstadoCuenta())
                 .mesa(cuentaDto.getMesa())
