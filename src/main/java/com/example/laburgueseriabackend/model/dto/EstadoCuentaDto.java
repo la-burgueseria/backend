@@ -1,23 +1,19 @@
 package com.example.laburgueseriabackend.model.dto;
 
-
 import com.example.laburgueseriabackend.model.entity.Cuenta;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
 @Data
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class MesaDto {
+public class EstadoCuentaDto {
     private Integer id;
-    private Integer numeroMesa;
-    private QrDto qr;
-    private EstadoMesaDto estadoMesa;
+    private String nombre;
     @JsonIgnore
     private List<Cuenta> cuentas;
 }
-

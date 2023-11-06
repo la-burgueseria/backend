@@ -30,10 +30,5 @@ public class InsumosPorProducto implements Serializable {
     @JoinColumn(name = "producto_id")
     private Producto producto;
 
-    //referencia reciproca a producto
-    @JsonBackReference
-    public Producto getProducto(){
-        return producto;
-    }
 
 }

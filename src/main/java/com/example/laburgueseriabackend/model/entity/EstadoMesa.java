@@ -1,5 +1,6 @@
 package com.example.laburgueseriabackend.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,10 +24,7 @@ public class EstadoMesa implements Serializable {
     private String nombre;
 
     @OneToMany(mappedBy = "estadoMesa", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Mesa> mesas;
 
-    @JsonManagedReference
-    public  List<Mesa> getMesas(){
-        return mesas;
-    }
 }

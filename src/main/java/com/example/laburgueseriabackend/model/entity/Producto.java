@@ -2,6 +2,7 @@ package com.example.laburgueseriabackend.model.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,20 +33,10 @@ public class Producto implements Serializable {
     @ManyToOne
     @JoinColumn(name = "categoria_producto_id")
     private CategoriaProducto categoriaProducto;
+
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<InsumosPorProducto> insumosPorProductos;
 
 
-    //IMPORTANTE CREAR EL GETTER DEL LA CONEXION para indicar las referencias
-    //TANTO EN EL ONETOMANY COMO EN EL MANYTOONE
-    @JsonBackReference
-    public CategoriaProducto getCategoriaProducto(){
-        return categoriaProducto;
-    }
-
-    //referencia a insumos pro producto
-    @JsonManagedReference
-    public  List<InsumosPorProducto> getInsumosPorProductos(){
-        return insumosPorProductos;
-    }
 }

@@ -2,10 +2,13 @@ package com.example.laburgueseriabackend.model.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data //anotacion de lombok crea automaticament todos los metodos basicos, setters y getters
 @AllArgsConstructor // anotacion de lombok, genera un constructor con todos los argumentos de la clase
@@ -26,12 +29,15 @@ public class Mesa implements Serializable {
     @JoinColumn(name = "qr_id")
     private Qr qr;
     //relacion many to one con estado mesa
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "estado_mesa_id")
     private EstadoMesa estadoMesa;
+    //relacion con cuentas
+    @JsonIgnore
+    @OneToMany(mappedBy = "mesa", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Cuenta> cuentas;
 
-    @JsonBackReference
-    public EstadoMesa getEstadoMesa(){
-        return estadoMesa;
-    }
+
+
+
 }

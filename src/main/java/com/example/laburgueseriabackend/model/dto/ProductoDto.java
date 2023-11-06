@@ -1,6 +1,7 @@
 package com.example.laburgueseriabackend.model.dto;
 
 import com.example.laburgueseriabackend.model.entity.CategoriaProducto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -18,5 +19,6 @@ public class ProductoDto implements Serializable {
     private String imagen;
     private String descripcion;
     private CategoriaProductoDto categoriaProductoDto;
+    @JsonIgnore
     private List<InsumosPorProductoDto> insumosPorProductosDto;
 }
