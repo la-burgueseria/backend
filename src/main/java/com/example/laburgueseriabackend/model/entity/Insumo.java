@@ -1,9 +1,11 @@
 package com.example.laburgueseriabackend.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data //anotacion de lombok crea automaticament todos los metodos basicos, setters y getters
 @AllArgsConstructor // anotacion de lombok, genera un constructor con todos los argumentos de la clase
@@ -24,5 +26,7 @@ public class Insumo implements Serializable {
     @Column(name = "cantidad")
     private Integer cantidad;
 
-
+    @JsonBackReference
+    @OneToMany(mappedBy = "insumo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<InsumosPorProducto> insumosPorProducto;
 }

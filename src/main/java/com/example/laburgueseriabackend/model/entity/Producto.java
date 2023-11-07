@@ -36,6 +36,7 @@ public class Producto implements Serializable {
 
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
+    @JsonBackReference
     private List<InsumosPorProducto> insumosPorProductos;
 
 

@@ -1,6 +1,7 @@
 package com.example.laburgueseriabackend.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,11 +22,11 @@ public class InsumosPorProducto implements Serializable {
 
     @Column(name = "cantidad")
     private Integer cantidad;
-
+    @JsonManagedReference
     @ManyToOne
     @JoinColumn(name = "insumo_id")
     private Insumo insumo;
-
+    @JsonManagedReference
     @ManyToOne
     @JoinColumn(name = "producto_id")
     private Producto producto;
