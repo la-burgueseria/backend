@@ -4,6 +4,7 @@ import com.example.laburgueseriabackend.model.dto.InsumoDto;
 import com.example.laburgueseriabackend.model.entity.Insumo;
 import com.example.laburgueseriabackend.model.payload.MensajeResponse;
 import com.example.laburgueseriabackend.service.IInsumoService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -193,5 +194,39 @@ public class InsumoController {
                 .build()
                 , HttpStatus.OK
         );
+    }
+    //buscar insumo por nombre
+    @GetMapping("insumo/buscar/{nombre}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> buscarPorNombre(@PathVariable String nombre){
+        List<Insumo> insumos;
+
+        try{
+            insumos  = insumoService.findInsumoByNameContaining(nombre.toUpperCase());
+            if(insumos.isEmpty()){
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("No se han encontrados insumos.")
+                                .object(null)
+                                .build()
+                        , HttpStatus.NOT_FOUND
+                );
+            }
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje("ok")
+                            .object(insumos)
+                            .build()
+                    , HttpStatus.OK
+            );
+        }catch(DataAccessException exDt){
+
+            return new ResponseEntity<>(MensajeResponse
+                    .builder()
+                    .mensaje(exDt.getMessage())
+                    .object(null)
+                    .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

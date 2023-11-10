@@ -13,4 +13,5 @@ public interface IInsumoService {
     Insumo findByNombre(String nombre);
     Boolean existsById(Integer id);
     List<Insumo> listAll();
+    List<Insumo> findInsumoByNameContaining(String nombre);
 }

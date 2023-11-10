@@ -73,4 +73,9 @@ public class InsumoImplService implements IInsumoService {
         //por lo cual se convierte a list usando (List)
         return (List) insumoDao.findAll();
     }
+
+    @Override
+    public List<Insumo> findInsumoByNameContaining(String nombre) {
+        return (List<Insumo>) insumoDao.findInsumoByNameContaining(nombre);
+    }
 }
