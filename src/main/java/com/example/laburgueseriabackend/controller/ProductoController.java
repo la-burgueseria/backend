@@ -11,8 +11,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -24,8 +27,20 @@ public class ProductoController {
     //Crear producto
     @PostMapping("producto")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> create(@RequestBody @NotNull ProductoDto productoDto){
+    public ResponseEntity<?> create(
+            @RequestParam("imagen")MultipartFile img,
+            @RequestParam("nombre") String nombre,
+            @RequestParam("precio") Double precio,
+            @RequestParam("desc") String descripcion
+            ) throws IOException {
         Producto productoSave, productoExists = null;
+        ProductoDto productoDto = ProductoDto.builder()
+                .id(0)
+                .nombre(nombre)
+                .precio(precio)
+                .descripcion(descripcion)
+                .imagen(img.getBytes())
+                .build();
 
         try{
 
@@ -37,11 +52,11 @@ public class ProductoController {
                                 .mensaje("Ya existe un producto con el mismo nombre")
                                 .object(null)
                                 .build()
-                        , HttpStatus.OK
+                        , HttpStatus.CONFLICT
                 );
             }
 
-            productoSave = productoService.save(productoDto);
+            productoSave = productoService.save(nombre, precio, descripcion, img);
 
             return new ResponseEntity<>(
                     MensajeResponse.builder()
@@ -145,12 +160,25 @@ public class ProductoController {
     //Actualizar producto
     @PutMapping("producto/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> update(@RequestBody ProductoDto productoDto, @PathVariable Integer id){
+    public ResponseEntity<?> update(@RequestParam("imagen")MultipartFile img,
+                                    @RequestParam("nombre") String nombre,
+                                    @RequestParam("precio") Double precio,
+                                    @RequestParam("desc") String descripcion,
+                                    @PathVariable Integer id) throws IOException {
+
+        ProductoDto productoDto = ProductoDto.builder()
+                .id(0)
+                .nombre(nombre)
+                .precio(precio)
+                .descripcion(descripcion)
+                .imagen(img.getBytes())
+                .build();
+
         Producto productoUpdate = null;
         try{
             if(productoService.existsById(id)){
                 productoDto.setId(id);
-                productoUpdate = productoService.save(productoDto);
+                productoUpdate = productoService.save(nombre, precio, descripcion, img);
 
                 return new ResponseEntity<>(MensajeResponse.builder()
                         .mensaje("Actualizado correctamente")

@@ -16,7 +16,7 @@ public class ProductoDto implements Serializable {
     private Integer id;
     private String nombre;
     private Double precio;
-    private String imagen;
+    private byte[] imagen;
     private String descripcion;
     private CategoriaProductoDto categoriaProductoDto;
     @JsonIgnore

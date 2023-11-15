@@ -26,8 +26,9 @@ public class Producto implements Serializable {
     private String nombre;
     @Column(name = "precio")
     private Double precio;
-    @Column(name = "imagen")
-    private String imagen;
+    @Lob
+    @Column(name = "imagen", length = 1000000)
+    private byte[] imagen;
     @Column(name = "descripcion")
     private String descripcion;
     @ManyToOne

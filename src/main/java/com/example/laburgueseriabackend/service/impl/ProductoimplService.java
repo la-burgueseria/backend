@@ -9,7 +9,11 @@ import com.example.laburgueseriabackend.service.IProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -21,23 +25,26 @@ public class ProductoimplService implements IProductoService {
     //GUARADR
     @Transactional
     @Override
-    public Producto save(ProductoDto productoDto) {
-        //obtener la categoria enviada dentro del productoDto
-        CategoriaProductoDto categoriaProductoDto = productoDto.getCategoriaProductoDto();
-        //convertir de CategoriaProductoDto a CategoriaProducto
-        CategoriaProducto categoriaProducto = CategoriaProducto.builder()
-                .id(categoriaProductoDto.getId())
-                .nombre(categoriaProductoDto.getNombre())
-                .build();
+    public Producto save(String nombre, Double precio, String descripcion, MultipartFile img) {
 
-        Producto producto = Producto.builder()
-                .id(productoDto.getId())
-                .nombre(productoDto.getNombre())
-                .precio(productoDto.getPrecio())
-                .imagen(productoDto.getImagen())
-                .descripcion(productoDto.getDescripcion())
-                .categoriaProducto(categoriaProducto)
-                .build();
+        String nombreImagen = StringUtils.cleanPath(img.getOriginalFilename());
+
+        if(nombreImagen.contains("..")){
+            System.out.println("not a valid file");
+        }
+
+        Producto producto = null;
+        try {
+            producto = Producto.builder()
+                    .id(0)
+                    .nombre(nombre)
+                    .precio(precio)
+                    .imagen(img.getBytes())
+                    .descripcion(descripcion)
+                    .build();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         return productoDao.save(producto);
     }
