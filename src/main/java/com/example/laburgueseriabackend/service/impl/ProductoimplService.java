@@ -6,13 +6,15 @@ import com.example.laburgueseriabackend.model.dto.ProductoDto;
 import com.example.laburgueseriabackend.model.entity.CategoriaProducto;
 import com.example.laburgueseriabackend.model.entity.Producto;
 import com.example.laburgueseriabackend.service.IProductoService;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.Base64;
 import java.util.List;
 
@@ -26,15 +28,13 @@ public class ProductoimplService implements IProductoService {
     @Transactional
     @Override
     public Producto save(String nombre, Double precio, String descripcion, MultipartFile img) {
-
-        String nombreImagen = StringUtils.cleanPath(img.getOriginalFilename());
-
-        if(nombreImagen.contains("..")){
-            System.out.println("not a valid file");
-        }
-
         Producto producto = null;
         try {
+            //optimizar imagen antes de guardarla
+            byte[] imagenBytes = img.getBytes();
+
+            byte[] imagenOptimizada = optimizarImagen(imagenBytes);
+
             producto = Producto.builder()
                     .id(0)
                     .nombre(nombre)
@@ -42,6 +42,7 @@ public class ProductoimplService implements IProductoService {
                     .imagen(img.getBytes())
                     .descripcion(descripcion)
                     .build();
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -76,5 +77,33 @@ public class ProductoimplService implements IProductoService {
     @Override
     public Boolean existsById(Integer id) {
         return productoDao.existsById(id);
+    }
+
+    private byte[] optimizarImagen(byte[] imagenOriginal){
+            try{
+                InputStream inputStream = new ByteArrayInputStream(imagenOriginal);
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+                Thumbnails.of(inputStream)
+                        .size(300,200)
+                        .outputFormat("jpg")
+                        .toOutputStream(outputStream);
+
+                byte[] imagenOptimizadaBytes = outputStream.toByteArray();
+                FileOutputStream fos = new FileOutputStream("imagen.jpg");
+                fos.write(imagenOptimizadaBytes);
+                fos.close();
+                // Verifica si el directorio existe, y si no, créalo
+                File directorio = new File("img");
+                if (!directorio.exists()) {
+                    directorio.mkdirs();
+                }
+
+
+                return outputStream.toByteArray();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return imagenOriginal;
+            }
     }
 }

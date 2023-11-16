@@ -32,17 +32,21 @@ public class ProductoController {
             @RequestParam("nombre") String nombre,
             @RequestParam("precio") Double precio,
             @RequestParam("desc") String descripcion
-            ) throws IOException {
+            ){
+
+
         Producto productoSave, productoExists = null;
-        ProductoDto productoDto = ProductoDto.builder()
-                .id(0)
-                .nombre(nombre)
-                .precio(precio)
-                .descripcion(descripcion)
-                .imagen(img.getBytes())
-                .build();
+
 
         try{
+
+            ProductoDto productoDto = ProductoDto.builder()
+                    .id(0)
+                    .nombre(nombre)
+                    .precio(precio)
+                    .descripcion(descripcion)
+                    .imagen(img.getBytes())
+                    .build();
 
             productoExists = productoService.findByNombre(productoDto.getNombre());
 
@@ -82,6 +86,8 @@ public class ProductoController {
                             .build()
                     , HttpStatus.INTERNAL_SERVER_ERROR
             );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
