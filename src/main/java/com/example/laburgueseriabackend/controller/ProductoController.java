@@ -2,6 +2,7 @@ package com.example.laburgueseriabackend.controller;
 
 import com.example.laburgueseriabackend.model.dto.CategoriaProductoDto;
 import com.example.laburgueseriabackend.model.dto.ProductoDto;
+import com.example.laburgueseriabackend.model.entity.CategoriaProducto;
 import com.example.laburgueseriabackend.model.entity.Producto;
 import com.example.laburgueseriabackend.model.payload.MensajeResponse;
 import com.example.laburgueseriabackend.service.IProductoService;
@@ -31,7 +32,8 @@ public class ProductoController {
             @RequestParam("imagen")MultipartFile img,
             @RequestParam("nombre") String nombre,
             @RequestParam("precio") Double precio,
-            @RequestParam("desc") String descripcion
+            @RequestParam("desc") String descripcion,
+            @RequestParam("categoria") Integer categoriaId
             ){
 
 
@@ -46,6 +48,12 @@ public class ProductoController {
                     .precio(precio)
                     .descripcion(descripcion)
                     .imagen(img.getBytes())
+                    .categoriaProductoDto(
+                            CategoriaProductoDto.builder()
+                                    .id(categoriaId)
+                                    .nombre("")
+                                    .build()
+                    )
                     .build();
 
             productoExists = productoService.findByNombre(productoDto.getNombre());
@@ -60,7 +68,7 @@ public class ProductoController {
                 );
             }
 
-            productoSave = productoService.save(nombre, precio, descripcion, img);
+            productoSave = productoService.save(nombre, precio, descripcion, img, categoriaId);
 
             return new ResponseEntity<>(
                     MensajeResponse.builder()
@@ -170,6 +178,7 @@ public class ProductoController {
                                     @RequestParam("nombre") String nombre,
                                     @RequestParam("precio") Double precio,
                                     @RequestParam("desc") String descripcion,
+                                    @RequestParam("categoria") Integer categoriaId,
                                     @PathVariable Integer id) throws IOException {
 
         ProductoDto productoDto = ProductoDto.builder()
@@ -184,7 +193,7 @@ public class ProductoController {
         try{
             if(productoService.existsById(id)){
                 productoDto.setId(id);
-                productoUpdate = productoService.save(nombre, precio, descripcion, img);
+                productoUpdate = productoService.save(nombre, precio, descripcion, img, categoriaId);
 
                 return new ResponseEntity<>(MensajeResponse.builder()
                         .mensaje("Actualizado correctamente")

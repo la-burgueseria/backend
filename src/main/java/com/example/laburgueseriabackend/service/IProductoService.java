@@ -12,7 +12,7 @@ public interface IProductoService {
 
     //GUARADR
     @Transactional
-    Producto save(String nombre, Double precio, String descripcion, MultipartFile img);
+    Producto save(String nombre, Double precio, String descripcion, MultipartFile img, Integer categoriaId);
 
     Producto findById(Integer id);
     void delete(Producto producto);

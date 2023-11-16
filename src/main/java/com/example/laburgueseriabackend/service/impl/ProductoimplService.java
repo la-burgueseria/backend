@@ -27,7 +27,7 @@ public class ProductoimplService implements IProductoService {
     //GUARADR
     @Transactional
     @Override
-    public Producto save(String nombre, Double precio, String descripcion, MultipartFile img) {
+    public Producto save(String nombre, Double precio, String descripcion, MultipartFile img, Integer categoriaId) {
         Producto producto = null;
         try {
             //optimizar imagen antes de guardarla
@@ -41,6 +41,12 @@ public class ProductoimplService implements IProductoService {
                     .precio(precio)
                     .imagen(img.getBytes())
                     .descripcion(descripcion)
+                    .categoriaProducto(
+                            CategoriaProducto.builder()
+                                    .id(categoriaId)
+                                    .nombre("")
+                                    .build()
+                    )
                     .build();
 
         } catch (IOException e) {
