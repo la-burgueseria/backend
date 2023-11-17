@@ -206,10 +206,10 @@ public class InsumoController {
             if(insumos.isEmpty()){
                 return new ResponseEntity<>(
                         MensajeResponse.builder()
-                                .mensaje("No se han encontrados insumos.")
-                                .object(null)
+                                .mensaje("OK")
+                                .object(insumos)
                                 .build()
-                        , HttpStatus.NOT_FOUND
+                        , HttpStatus.OK
                 );
             }
             return new ResponseEntity<>(
