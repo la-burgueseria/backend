@@ -7,6 +7,9 @@ import com.example.laburgueseriabackend.service.IInsumoService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +45,23 @@ public class InsumoController {
                 .build()
                 , HttpStatus.OK
         );
+    }
+    //PAGINACION DE INSUMOS
+    @GetMapping("insumos2")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Page<Insumo>> insumosPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "nombre") String order,
+            @RequestParam(defaultValue = "true") boolean asc
+    ){
+        Page<Insumo> insumos = insumoService.insumosPaginados(
+                PageRequest.of(page,size, Sort.by(order)));
+                if(!asc){
+                    insumos = insumoService.insumosPaginados(
+                            PageRequest.of(page,size, Sort.by(order).ascending()));
+                }
+        return  new ResponseEntity<Page<Insumo>>(insumos, HttpStatus.OK);
     }
 
 
@@ -111,7 +131,7 @@ public class InsumoController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> update(@RequestBody InsumoDto insumoDto, @PathVariable Integer id){
         Insumo insumoUpdate = null;
-
+        System.out.println(insumoDto.toString());
         try{
 
             if(insumoService.existsById(id)){

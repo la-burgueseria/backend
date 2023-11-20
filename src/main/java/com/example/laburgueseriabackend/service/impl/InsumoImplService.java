@@ -5,6 +5,9 @@ import com.example.laburgueseriabackend.model.dto.InsumoDto;
 import com.example.laburgueseriabackend.model.entity.Insumo;
 import com.example.laburgueseriabackend.service.IInsumoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,5 +80,10 @@ public class InsumoImplService implements IInsumoService {
     @Override
     public List<Insumo> findInsumoByNameContaining(String nombre) {
         return (List<Insumo>) insumoDao.findInsumoByNameContaining(nombre);
+    }
+
+    @Override
+    public Page<Insumo> insumosPaginados(Pageable pageable) {
+        return insumoDao.findAll(pageable);
     }
 }
