@@ -16,5 +16,5 @@ public interface IInsumoService {
     Boolean existsById(Integer id);
     List<Insumo> listAll();
     List<Insumo> findInsumoByNameContaining(String nombre);
-    public Page<Insumo> insumosPaginados(Pageable pageable);
+    Page<Insumo> insumosPaginados(Pageable pageable);
 }

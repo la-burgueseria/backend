@@ -9,6 +9,9 @@ import com.example.laburgueseriabackend.service.IProductoService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +32,7 @@ public class ProductoController {
     @PostMapping("producto")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> create(
-            @RequestParam("imagen")MultipartFile img,
+            @RequestParam(value = "imagen", required = false)MultipartFile img,
             @RequestParam("nombre") String nombre,
             @RequestParam("precio") Double precio,
             @RequestParam("desc") String descripcion,
@@ -174,7 +177,7 @@ public class ProductoController {
     //Actualizar producto
     @PutMapping("producto/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> update(@RequestParam("imagen")MultipartFile img,
+    public ResponseEntity<?> update(@RequestParam(value = "imagen", required = false)MultipartFile img,
                                     @RequestParam("nombre") String nombre,
                                     @RequestParam("precio") Double precio,
                                     @RequestParam("desc") String descripcion,
@@ -256,4 +259,58 @@ public class ProductoController {
         }
     }
 
+    //paginacion
+    @GetMapping("productos-page")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Page<Producto>> productosPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(defaultValue = "nombre") String order,
+            @RequestParam(defaultValue = "true") boolean asc
+    ){
+        Page<Producto> productos = productoService.productosPaginados(
+                PageRequest.of(page, size, Sort.by(order))
+        );
+        if(!asc){
+            productos = productoService.productosPaginados(
+                    PageRequest.of(page, size, Sort.by(order).descending())
+            );
+        }
+        return new ResponseEntity<Page<Producto>>(productos, HttpStatus.OK);
+    }
+
+    //buscar producto por nombre
+    @GetMapping("producto/buscar/{nombre}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> buscarPorNombre(@PathVariable String nombre){
+        List<Producto> productos;
+
+        try{
+            productos = productoService.findProductoByNombre(nombre.toUpperCase());
+            if(productos.isEmpty()){
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("OK")
+                                .object(productos)
+                                .build()
+                        , HttpStatus.OK
+                );
+            }
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje("ok")
+                            .object(productos)
+                            .build()
+                    , HttpStatus.OK
+            );
+        }catch(DataAccessException exDt){
+
+            return new ResponseEntity<>(MensajeResponse
+                    .builder()
+                    .mensaje(exDt.getMessage())
+                    .object(null)
+                    .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

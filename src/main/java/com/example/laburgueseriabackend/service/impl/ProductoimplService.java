@@ -8,6 +8,8 @@ import com.example.laburgueseriabackend.model.entity.Producto;
 import com.example.laburgueseriabackend.service.IProductoService;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -83,6 +85,17 @@ public class ProductoimplService implements IProductoService {
     @Override
     public Boolean existsById(Integer id) {
         return productoDao.existsById(id);
+    }
+
+    //paginación de productos
+    @Override
+    public Page<Producto> productosPaginados(Pageable pageable) {
+        return productoDao.findAll(pageable);
+    }
+    //busqueda por nombre
+    @Override
+    public List<Producto> findProductoByNombre(String nombre) {
+        return (List<Producto>) productoDao.findProductoByNombre(nombre);
     }
 
     private byte[] optimizarImagen(byte[] imagenOriginal){
