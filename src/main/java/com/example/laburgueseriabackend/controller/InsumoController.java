@@ -131,7 +131,6 @@ public class InsumoController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> update(@RequestBody InsumoDto insumoDto, @PathVariable Integer id){
         Insumo insumoUpdate = null;
-        System.out.println(insumoDto.toString());
         try{
 
             if(insumoService.existsById(id)){

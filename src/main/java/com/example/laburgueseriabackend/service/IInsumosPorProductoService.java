@@ -13,4 +13,6 @@ public interface IInsumosPorProductoService {
     List<InsumosPorProducto> listAll();
     Boolean existsById(Integer id);
     List<InsumosPorProducto> insumoPorProductoExists(Integer idInsumo, Integer idProducto);
+
+    List<InsumosPorProducto> selecionarInsumosDelProducto(Integer idProducto);
 }

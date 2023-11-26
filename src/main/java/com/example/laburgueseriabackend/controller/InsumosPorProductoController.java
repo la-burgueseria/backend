@@ -1,10 +1,15 @@
 package com.example.laburgueseriabackend.controller;
 
+import com.example.laburgueseriabackend.model.dto.InsumoDto;
 import com.example.laburgueseriabackend.model.dto.InsumosPorProductoDto;
+import com.example.laburgueseriabackend.model.dto.ProductoDto;
+import com.example.laburgueseriabackend.model.entity.Insumo;
 import com.example.laburgueseriabackend.model.entity.InsumosPorProducto;
 import com.example.laburgueseriabackend.model.entity.Producto;
 import com.example.laburgueseriabackend.model.payload.MensajeResponse;
+import com.example.laburgueseriabackend.service.IInsumoService;
 import com.example.laburgueseriabackend.service.IInsumosPorProductoService;
+import com.example.laburgueseriabackend.service.IProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -18,15 +23,33 @@ import java.util.List;
 public class InsumosPorProductoController {
     @Autowired
     private IInsumosPorProductoService insumosPorProductoService;
-
+    @Autowired
+    private IInsumoService insumoService;
+    @Autowired
+    private IProductoService productoService;
     //crear insumo por producto
     @PostMapping("insumo-por-producto")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> save(@RequestBody InsumosPorProductoDto insumosPorProductoDto){
+    public ResponseEntity<?> save(@RequestBody InsumosPorProductoDto insumosPorProductoDto
+    , @RequestParam("idInsumo") Integer insumoId
+    , @RequestParam("idProducto") Integer productoId){
         InsumosPorProducto insumosPorProductoSave = null;
         List<InsumosPorProducto> insumosPorProductoExists = null;
-        Integer idInsumo = insumosPorProductoDto.getInsumoDto().getId();
-        Integer idProducto = insumosPorProductoDto.getProductoDto().getId();
+        Integer idInsumo = insumoId;
+        Integer idProducto = productoId;
+
+        //construir nuevamente el ippDto (no llegan los objetos insumos ni producto dentro de el)
+        Insumo insumo = this.insumoService.findById(idInsumo);
+        Producto producto = this.productoService.findById(idProducto);
+
+        insumosPorProductoDto = InsumosPorProductoDto.builder()
+                .id(insumosPorProductoDto.getId())
+                .cantidad(insumosPorProductoDto.getCantidad())
+                .insumoDto(insumo)
+                .productoDto(producto)
+                .build();
+
+
         try{
             //validar si el insumo que se desea vincular al producto no está ya vinculado con anterioridad
             insumosPorProductoExists = insumosPorProductoService.insumoPorProductoExists(idInsumo, idProducto);
@@ -153,6 +176,39 @@ public class InsumosPorProductoController {
         }
     }
 
+    //obtener los insumos vinculados a un producto dado
+    @GetMapping("insumo-por-producto/producto/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> insumosProducto(@PathVariable Integer id){
+        try{
+            List<InsumosPorProducto> insumosProductos = this.insumosPorProductoService.selecionarInsumosDelProducto(id);
+            if(insumosProductos.isEmpty()){
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("No hay registros en el sistema")
+                                .object(null)
+                                .build()
+                        , HttpStatus.OK
+                );
+            }
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje("Ok")
+                            .object(insumosProductos)
+                            .build()
+                    , HttpStatus.OK
+            );
+        }catch (DataAccessException exDt){
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje(exDt.getMessage())
+                            .object(null)
+                            .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
     //eliminar insumo
     @DeleteMapping("insumo-por-producto/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -179,26 +235,37 @@ public class InsumosPorProductoController {
     }
 
     //  ACTUALIZAR REGISTRO
-    @PutMapping("insumo-por-producto/{id}")
+    @PutMapping("insumo-por-producto/{id}/{insumoId}/{productoId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> update(@RequestBody InsumosPorProductoDto insumosPorProductoDto, @PathVariable Integer id){
+    public ResponseEntity<?> update(@RequestBody InsumosPorProductoDto insumosPorProductoDto,
+                                    @PathVariable Integer id,
+                                    @PathVariable Integer insumoId,
+                                    @PathVariable Integer productoId){
+        System.out.println(insumosPorProductoDto);
         InsumosPorProducto insumosPorProductoUpdate = null;
         List<InsumosPorProducto> insumosPorProductoExists = null;
-        Integer idInsumo = insumosPorProductoDto.getInsumoDto().getId();
-        Integer idProducto = insumosPorProductoDto.getProductoDto().getId();
+        Integer idInsumo = insumoId;
+        Integer idProducto = productoId;
+        Insumo insumo = null;
+        Producto producto = null;
         try{
+            insumo = this.insumoService.findById(idInsumo);
+            producto = this.productoService.findById(idProducto);
             insumosPorProductoExists = insumosPorProductoService.insumoPorProductoExists(idInsumo, idProducto);
-            if(!insumosPorProductoExists.isEmpty()){
+            if(insumosPorProductoExists.isEmpty()){
                 return new ResponseEntity<>(
                         MensajeResponse.builder()
-                                .mensaje("El insumo que se desea vincular ya está asignado a este producto")
+                                .mensaje("No hay ningún insumo asignado a este producto con esta referencia: "+ id)
                                 .object(null)
                                 .build()
-                        , HttpStatus.ALREADY_REPORTED
+                        , HttpStatus.NOT_FOUND
                 );
             }
 
             insumosPorProductoDto.setId(id);
+
+            insumosPorProductoDto.setInsumoDto(insumo);
+            insumosPorProductoDto.setProductoDto(producto);
             insumosPorProductoUpdate = insumosPorProductoService.save(insumosPorProductoDto);
 
             return new ResponseEntity<>(

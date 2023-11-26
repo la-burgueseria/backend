@@ -6,6 +6,7 @@ import com.example.laburgueseriabackend.model.entity.CategoriaProducto;
 import com.example.laburgueseriabackend.model.entity.Producto;
 import com.example.laburgueseriabackend.model.payload.MensajeResponse;
 import com.example.laburgueseriabackend.service.IProductoService;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -36,29 +37,43 @@ public class ProductoController {
             @RequestParam("nombre") String nombre,
             @RequestParam("precio") Double precio,
             @RequestParam("desc") String descripcion,
-            @RequestParam("categoria") Integer categoriaId
+            @RequestParam(value = "categoria") Integer categoriaId
             ){
 
 
         Producto productoSave, productoExists = null;
-
+        ProductoDto productoDto = null;
 
         try{
-
-            ProductoDto productoDto = ProductoDto.builder()
-                    .id(0)
-                    .nombre(nombre)
-                    .precio(precio)
-                    .descripcion(descripcion)
-                    .imagen(img.getBytes())
-                    .categoriaProductoDto(
-                            CategoriaProductoDto.builder()
-                                    .id(categoriaId)
-                                    .nombre("")
-                                    .build()
-                    )
-                    .build();
-
+            if(img == null){
+                productoDto = ProductoDto.builder()
+                        .id(0)
+                        .nombre(nombre)
+                        .precio(precio)
+                        .descripcion(descripcion)
+                        .imagen(null)
+                        .categoriaProductoDto(
+                                CategoriaProductoDto.builder()
+                                        .id(categoriaId)
+                                        .nombre("")
+                                        .build()
+                        )
+                        .build();
+            }else {
+                productoDto = ProductoDto.builder()
+                        .id(0)
+                        .nombre(nombre)
+                        .precio(precio)
+                        .descripcion(descripcion)
+                        .imagen(img.getBytes())
+                        .categoriaProductoDto(
+                                CategoriaProductoDto.builder()
+                                        .id(categoriaId)
+                                        .nombre("")
+                                        .build()
+                        )
+                        .build();
+            }
             productoExists = productoService.findByNombre(productoDto.getNombre());
 
             if(productoExists != null){
@@ -182,21 +197,35 @@ public class ProductoController {
                                     @RequestParam("precio") Double precio,
                                     @RequestParam("desc") String descripcion,
                                     @RequestParam("categoria") Integer categoriaId,
+                                    @RequestParam("id") Integer idProducto,
                                     @PathVariable Integer id) throws IOException {
 
-        ProductoDto productoDto = ProductoDto.builder()
-                .id(0)
-                .nombre(nombre)
-                .precio(precio)
-                .descripcion(descripcion)
-                .imagen(img.getBytes())
-                .build();
+        ProductoDto productoDto = null;
+        System.out.println(id);
+        if(img != null){
+            productoDto = ProductoDto.builder()
+                    .id(idProducto)
+                    .nombre(nombre)
+                    .precio(precio)
+                    .descripcion(descripcion)
+                    .imagen(img.getBytes())
+                    .build();
+        }
+        else{
+            productoDto = ProductoDto.builder()
+                    .id(idProducto)
+                    .nombre(nombre)
+                    .precio(precio)
+                    .descripcion(descripcion)
+                    .imagen(null)
+                    .build();
+        }
 
         Producto productoUpdate = null;
         try{
             if(productoService.existsById(id)){
                 productoDto.setId(id);
-                productoUpdate = productoService.save(nombre, precio, descripcion, img, categoriaId);
+                productoUpdate = productoService.save2(nombre, precio, descripcion, img, categoriaId, id);
 
                 return new ResponseEntity<>(MensajeResponse.builder()
                         .mensaje("Actualizado correctamente")

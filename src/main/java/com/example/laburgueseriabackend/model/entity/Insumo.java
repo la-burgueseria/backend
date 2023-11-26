@@ -1,6 +1,7 @@
 package com.example.laburgueseriabackend.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,6 +28,7 @@ public class Insumo implements Serializable {
     private Integer cantidad;
 
     @JsonBackReference
+    @JsonIgnore
     @OneToMany(mappedBy = "insumo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<InsumosPorProducto> insumosPorProducto;
 }

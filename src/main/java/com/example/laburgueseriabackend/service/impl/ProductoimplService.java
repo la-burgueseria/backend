@@ -32,24 +32,88 @@ public class ProductoimplService implements IProductoService {
     public Producto save(String nombre, Double precio, String descripcion, MultipartFile img, Integer categoriaId) {
         Producto producto = null;
         try {
-            //optimizar imagen antes de guardarla
-            byte[] imagenBytes = img.getBytes();
+            if(img == null){
+                producto = Producto.builder()
+                        .id(0)
+                        .nombre(nombre)
+                        .precio(precio)
+                        .imagen(null)
+                        .descripcion(descripcion)
+                        .categoriaProducto(
+                                CategoriaProducto.builder()
+                                        .id(categoriaId)
+                                        .nombre("")
+                                        .build()
+                        )
+                        .build();
+            }else{
+                //optimizar imagen antes de guardarla
+                byte[] imagenBytes = img.getBytes();
 
-            byte[] imagenOptimizada = optimizarImagen(imagenBytes);
+                byte[] imagenOptimizada = optimizarImagen(imagenBytes);
 
-            producto = Producto.builder()
-                    .id(0)
-                    .nombre(nombre)
-                    .precio(precio)
-                    .imagen(img.getBytes())
-                    .descripcion(descripcion)
-                    .categoriaProducto(
-                            CategoriaProducto.builder()
-                                    .id(categoriaId)
-                                    .nombre("")
-                                    .build()
-                    )
-                    .build();
+                producto = Producto.builder()
+                        .id(0)
+                        .nombre(nombre)
+                        .precio(precio)
+                        .imagen(img.getBytes())
+                        .descripcion(descripcion)
+                        .categoriaProducto(
+                                CategoriaProducto.builder()
+                                        .id(categoriaId)
+                                        .nombre("")
+                                        .build()
+                        )
+                        .build();
+            }
+
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return productoDao.save(producto);
+    }
+    @Transactional
+    @Override
+    public Producto save2(String nombre, Double precio, String descripcion, MultipartFile img, Integer categoriaId, Integer id) {
+        Producto producto = null;
+        try {
+            if(img == null){
+                producto = Producto.builder()
+                        .id(id)
+                        .nombre(nombre)
+                        .precio(precio)
+                        .imagen(null)
+                        .descripcion(descripcion)
+                        .categoriaProducto(
+                                CategoriaProducto.builder()
+                                        .id(categoriaId)
+                                        .nombre("")
+                                        .build()
+                        )
+                        .build();
+            }else{
+                //optimizar imagen antes de guardarla
+                byte[] imagenBytes = img.getBytes();
+
+                byte[] imagenOptimizada = optimizarImagen(imagenBytes);
+
+                producto = Producto.builder()
+                        .id(id)
+                        .nombre(nombre)
+                        .precio(precio)
+                        .imagen(img.getBytes())
+                        .descripcion(descripcion)
+                        .categoriaProducto(
+                                CategoriaProducto.builder()
+                                        .id(categoriaId)
+                                        .nombre("")
+                                        .build()
+                        )
+                        .build();
+            }
+
 
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -70,10 +70,6 @@ public class InsumoImplService implements IInsumoService {
     @Transactional(readOnly = true)
     @Override
     public List<Insumo> listAll() {
-        //listar todos los insumos almacenados
-        //PENDIENTE VOLVERLO UNA PAGINACION
-        //Este metodo devuelve un Iterable
-        //por lo cual se convierte a list usando (List)
         return (List) insumoDao.findAll();
     }
 

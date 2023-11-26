@@ -64,6 +64,11 @@ public class InsumosPorProductoImplService implements IInsumosPorProductoService
 
     @Override
     public List<InsumosPorProducto> insumoPorProductoExists(Integer idInsumo, Integer idProducto) {
-        return (List) insumosPorProductoDao.insumoPorProductoExists(idInsumo, idProducto);
+        return (List<InsumosPorProducto>) insumosPorProductoDao.insumoPorProductoExists(idInsumo, idProducto);
+    }
+
+    @Override
+    public List<InsumosPorProducto> selecionarInsumosDelProducto(Integer idProducto) {
+        return (List<InsumosPorProducto>) insumosPorProductoDao.selecionarInsumosDelProducto(idProducto);
     }
 }

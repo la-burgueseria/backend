@@ -13,4 +13,7 @@ public interface InsumosPorProductoDao extends CrudRepository<InsumosPorProducto
     //un producto no puede tener más de una vez el mismo insumo vinculado
     @Query("SELECT ipp FROM InsumosPorProducto ipp WHERE ipp.insumo.id = :idInsumo AND ipp.producto.id = :idProducto")
     List<InsumosPorProducto> insumoPorProductoExists(Integer idInsumo, Integer idProducto);
+    //OBTENER LOS INSUMOS ASIGNADOS A UN PRODUCTO DADO
+    @Query("SELECT ipp from InsumosPorProducto ipp WHERE ipp.producto.id = :idProducto")
+    List<InsumosPorProducto> selecionarInsumosDelProducto(Integer idProducto);
 }
