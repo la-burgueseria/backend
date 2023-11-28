@@ -7,6 +7,8 @@ import com.example.laburgueseriabackend.model.entity.Mesa;
 import com.example.laburgueseriabackend.model.entity.Qr;
 import com.example.laburgueseriabackend.service.IMesaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -63,6 +65,12 @@ public class MesaImplService implements IMesaService {
     public List<Mesa> listAll() {
         return (List<Mesa>) mesaDao.findAll();
     }
+
+    @Override
+    public Page<Mesa> mesasPaginadas(Pageable pageable) {
+        return mesaDao.findAll(pageable);
+    }
+
     //VERIFICAR SI EXISTE EL ID
     @Override
     public Boolean existsById(Integer id) {

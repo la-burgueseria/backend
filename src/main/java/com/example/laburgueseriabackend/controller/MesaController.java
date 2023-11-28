@@ -10,6 +10,9 @@ import com.example.laburgueseriabackend.service.IMesaService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -111,6 +114,28 @@ public class MesaController {
         }
 
     }
+
+    //PAGINACION MESAS
+    @GetMapping("mesas-page")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Page<Mesa>> mesasPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String order,
+            @RequestParam(defaultValue = "true") boolean asc
+    ){
+        Page<Mesa> mesas = mesaService.mesasPaginadas(
+                PageRequest.of(page, size, Sort.by(order))
+        );
+
+        if(!asc){
+            mesas = mesaService.mesasPaginadas(
+                    PageRequest.of(page, size, Sort.by(order).descending())
+            );
+        }
+        return new ResponseEntity<Page<Mesa>>(mesas, HttpStatus.OK);
+    }
+
     //MESA POR ID
     @GetMapping("mesa/{id}")
     @ResponseStatus(HttpStatus.FOUND)

@@ -27,7 +27,7 @@ public class Cuenta implements Serializable {
     @Column(name = "fecha")
     private String fecha;
     // ORGANIZAR RELACION ENTRE CUENTA Y PRODUCTOS CON LA ENTIDAD INTERMEDIA
-    @OneToMany(mappedBy = "cuenta")
+    @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
     private List<CuentaProductos> cuentaProductos;
 
@@ -36,7 +36,7 @@ public class Cuenta implements Serializable {
     @JoinColumn(name = "estado_cuenta_id")
     private EstadoCuenta estadoCuenta;
     //relacion con mesas
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "mesa_id")
     private Mesa mesa;
 
