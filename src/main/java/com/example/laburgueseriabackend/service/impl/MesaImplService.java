@@ -2,7 +2,6 @@ package com.example.laburgueseriabackend.service.impl;
 
 import com.example.laburgueseriabackend.model.dao.MesaDao;
 import com.example.laburgueseriabackend.model.dto.MesaDto;
-import com.example.laburgueseriabackend.model.entity.EstadoMesa;
 import com.example.laburgueseriabackend.model.entity.Mesa;
 import com.example.laburgueseriabackend.model.entity.Qr;
 import com.example.laburgueseriabackend.service.IMesaService;
@@ -20,23 +19,31 @@ public class MesaImplService implements IMesaService {
     //GUARDAR MESA
     @Override
     public Mesa save(MesaDto mesaDto) {
-        Mesa mesa = Mesa.builder()
-                .id(mesaDto.getId())
-                .numeroMesa(mesaDto.getNumeroMesa())
-                .qr(
-                        Qr.builder()
-                                .id(mesaDto.getQr().getId())
-                                .ruta(mesaDto.getQr().getRuta())
-                                .url(mesaDto.getQr().getUrl())
-                                .build()
-                )
-                .estadoMesa(
-                        EstadoMesa.builder()
-                                .id(mesaDto.getEstadoMesa().getId())
-                                .nombre(mesaDto.getEstadoMesa().getNombre())
-                                .build()
-                )
-                .build();
+        Mesa mesa = null;
+        if(mesaDto.getQr() != null){
+            mesa = Mesa.builder()
+                    .id(mesaDto.getId())
+                    .numeroMesa(mesaDto.getNumeroMesa())
+                    //estado por defecto siempre será disponible
+                    .estado(mesaDto.getEstado())
+                    .qr(
+                            Qr.builder()
+                                    .id(mesaDto.getQr().getId())
+                                    .ruta(mesaDto.getQr().getRuta())
+                                    .url(mesaDto.getQr().getUrl())
+                                    .build()
+                    )
+                    .build();
+        }
+        else{
+            mesa = Mesa.builder()
+                    .id(mesaDto.getId())
+                    .numeroMesa(mesaDto.getNumeroMesa())
+                    //estado por defecto siempre será disponible
+                    .estado(mesaDto.getEstado())
+                    .qr(null)
+                    .build();
+        }
         return mesaDao.save(mesa);
     }
     //BUSCAR MESA POR ID
@@ -53,6 +60,11 @@ public class MesaImplService implements IMesaService {
     @Override
     public Mesa findByNumMesa(Integer numeroMesa) {
         return mesaDao.findByNumMesa(numeroMesa);
+    }
+
+    @Override
+    public List<Mesa> finNumeroMesa(Integer numero) {
+        return (List<Mesa>) mesaDao.findNumeroMesa(numero);
     }
 
     @Override

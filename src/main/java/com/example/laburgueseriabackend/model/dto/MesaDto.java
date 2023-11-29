@@ -16,7 +16,7 @@ public class MesaDto {
     private Integer id;
     private Integer numeroMesa;
     private QrDto qr;
-    private EstadoMesaDto estadoMesa;
+    private String estado;
     @JsonIgnore
     private List<Cuenta> cuentas;
 }

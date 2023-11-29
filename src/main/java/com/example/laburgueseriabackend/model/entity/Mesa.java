@@ -24,15 +24,12 @@ public class Mesa implements Serializable {
     private Integer id;
     @Column(name = "num_mesa")
     private Integer numeroMesa;
+    @Column(name = "estado")
+    private String estado;
     //relacion one to one con los códigos QR
     @OneToOne
     @JoinColumn(name = "qr_id")
-    private Qr qr;
-    //relacion many to one con estado mesa
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "estado_mesa_id")
-    private EstadoMesa estadoMesa;
-    //relacion con cuentas
+    private Qr qr;    //relacion con cuentas
     @JsonIgnore
     @OneToMany(mappedBy = "mesa", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Cuenta> cuentas;

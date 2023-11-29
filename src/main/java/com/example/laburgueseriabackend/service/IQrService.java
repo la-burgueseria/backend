@@ -1,8 +1,8 @@
 package com.example.laburgueseriabackend.service;
 
-import com.example.laburgueseriabackend.model.dto.EstadoMesaDto;
+
 import com.example.laburgueseriabackend.model.dto.QrDto;
-import com.example.laburgueseriabackend.model.entity.EstadoMesa;
+
 import com.example.laburgueseriabackend.model.entity.Qr;
 
 import java.util.List;

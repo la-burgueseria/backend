@@ -1,7 +1,7 @@
 package com.example.laburgueseriabackend.controller;
 
 
-import com.example.laburgueseriabackend.model.dto.EstadoMesaDto;
+
 import com.example.laburgueseriabackend.model.dto.MesaDto;
 import com.example.laburgueseriabackend.model.dto.QrDto;
 import com.example.laburgueseriabackend.model.entity.Mesa;
@@ -46,7 +46,27 @@ public class MesaController {
             }
 
             mesaSave = mesaService.save(mesaDto);
-
+            if(mesaSave.getQr() != null){
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("Mesa creada correctamente")
+                                .object(
+                                        MesaDto.builder()
+                                                .id(mesaSave.getId())
+                                                .numeroMesa(mesaSave.getNumeroMesa())
+                                                //estado por defecto siempre sera disponible
+                                                .estado("Disponible")
+                                                .qr(QrDto.builder()
+                                                        .id(mesaSave.getQr().getId())
+                                                        .ruta(mesaSave.getQr().getRuta())
+                                                        .url(mesaSave.getQr().getUrl())
+                                                        .build())
+                                                .build()
+                                )
+                                .build()
+                        , HttpStatus.CREATED
+                );
+            }
             return new ResponseEntity<>(
                     MensajeResponse.builder()
                             .mensaje("Mesa creada correctamente")
@@ -54,15 +74,9 @@ public class MesaController {
                                     MesaDto.builder()
                                             .id(mesaSave.getId())
                                             .numeroMesa(mesaSave.getNumeroMesa())
-                                            .qr(QrDto.builder()
-                                                    .id(mesaSave.getQr().getId())
-                                                    .ruta(mesaSave.getQr().getRuta())
-                                                    .url(mesaSave.getQr().getUrl())
-                                                    .build())
-                                            .estadoMesa(EstadoMesaDto.builder()
-                                                    .id(mesaSave.getEstadoMesa().getId())
-                                                    .nombre(mesaSave.getEstadoMesa().getNombre())
-                                                    .build())
+                                            //estado por defecto siempre sera disponible
+                                            .estado("Disponible")
+                                            .qr(null)
                                             .build()
                             )
                             .build()
@@ -150,14 +164,11 @@ public class MesaController {
                                         MesaDto.builder()
                                                 .id(mesa.getId())
                                                 .numeroMesa(mesa.getNumeroMesa())
+                                                .estado(mesa.getEstado())
                                                 .qr(QrDto.builder()
                                                         .id(mesa.getQr().getId())
                                                         .ruta(mesa.getQr().getRuta())
                                                         .url(mesa.getQr().getUrl())
-                                                        .build())
-                                                .estadoMesa(EstadoMesaDto.builder()
-                                                        .id(mesa.getEstadoMesa().getId())
-                                                        .nombre(mesa.getEstadoMesa().getNombre())
                                                         .build())
                                                 .build()
                                 )
@@ -207,10 +218,6 @@ public class MesaController {
     }
 
     //ACTUALIZAR MESA
-    //Falta:
-    //* Validar que si se cambia el número de mesa no coincida
-    //  con alguno registrado en la bse de datos (que no esta el del objeto en cuestion)
-    //* Que no se pueda vincular con un id de qr que ya este vinculado a otra mesa
     @PutMapping("mesa/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> update(@RequestBody MesaDto mesaDto, @PathVariable Integer id){
@@ -227,46 +234,8 @@ public class MesaController {
 
                     //en caso de no haber ninguna mesa con el numero nuevo
                     if(mesaExists == null){
-                        //validar en casi de que se vaya a cambiar el número de qr
-                        //en caso de ser distintos
-                        if(mesa.getQr().getId() != mesaDto.getQr().getId()){
-                            Mesa mesaQrId = mesaService.findByQrId(mesaDto.getQr().getId());
-                            //si el nuevo número de qr esta libre
-                            if(mesaQrId == null){
-                                mesaUpdate = mesaService.save(mesaDto);
-
-                                return new ResponseEntity<>(
-                                        MensajeResponse.builder()
-                                                .mensaje("Ok")
-                                                .object(
-                                                        MesaDto.builder()
-                                                                .id(mesaUpdate.getId())
-                                                                .numeroMesa(mesaUpdate.getNumeroMesa())
-                                                                .qr(QrDto.builder()
-                                                                        .id(mesaUpdate.getQr().getId())
-                                                                        .ruta(mesaUpdate.getQr().getRuta())
-                                                                        .url(mesaUpdate.getQr().getUrl())
-                                                                        .build())
-                                                                .estadoMesa(EstadoMesaDto.builder()
-                                                                        .id(mesaUpdate.getEstadoMesa().getId())
-                                                                        .nombre(mesaUpdate.getEstadoMesa().getNombre())
-                                                                        .build())
-                                                                .build()
-                                                )
-                                                .build()
-                                        , HttpStatus.CREATED
-                                );
-                            }
-                            //si el número de qr ya está en uso
-                            return new ResponseEntity<>(MensajeResponse.builder()
-                                    .mensaje("Ya existe una mesa con el mismo QR asginado")
-                                    .object(null)
-                                    .build()
-                                    , HttpStatus.CONFLICT
-                            );
-                        }
-                        //si no se hara cambio de numero de qr
-                        else if(mesa.getQr().getId() == mesaDto.getQr().getId()){
+                        //si no tiene ningun qr asignado
+                        if(mesa.getQr() == null){
                             mesaUpdate = mesaService.save(mesaDto);
 
                             return new ResponseEntity<>(
@@ -276,21 +245,76 @@ public class MesaController {
                                                     MesaDto.builder()
                                                             .id(mesaUpdate.getId())
                                                             .numeroMesa(mesaUpdate.getNumeroMesa())
-                                                            .qr(QrDto.builder()
-                                                                    .id(mesaUpdate.getQr().getId())
-                                                                    .ruta(mesaUpdate.getQr().getRuta())
-                                                                    .url(mesaUpdate.getQr().getUrl())
-                                                                    .build())
-                                                            .estadoMesa(EstadoMesaDto.builder()
-                                                                    .id(mesaUpdate.getEstadoMesa().getId())
-                                                                    .nombre(mesaUpdate.getEstadoMesa().getNombre())
-                                                                    .build())
+                                                            .estado(mesaUpdate.getEstado())
+                                                            .qr(null)
                                                             .build()
                                             )
                                             .build()
                                     , HttpStatus.CREATED
                             );
                         }
+                        else{
+                            //validar en casi de que se vaya a cambiar el número de qr
+                            //en caso de ser distintos
+                            if(mesa.getQr().getId() != mesaDto.getQr().getId()){
+                                Mesa mesaQrId = mesaService.findByQrId(mesaDto.getQr().getId());
+                                //si el nuevo número de qr esta libre
+                                if(mesaQrId == null){
+                                    mesaUpdate = mesaService.save(mesaDto);
+
+                                    return new ResponseEntity<>(
+                                            MensajeResponse.builder()
+                                                    .mensaje("Ok")
+                                                    .object(
+                                                            MesaDto.builder()
+                                                                    .id(mesaUpdate.getId())
+                                                                    .numeroMesa(mesaUpdate.getNumeroMesa())
+                                                                    .estado(mesaUpdate.getEstado())
+                                                                    .qr(QrDto.builder()
+                                                                            .id(mesaUpdate.getQr().getId())
+                                                                            .ruta(mesaUpdate.getQr().getRuta())
+                                                                            .url(mesaUpdate.getQr().getUrl())
+                                                                            .build())
+                                                                    .build()
+                                                    )
+                                                    .build()
+                                            , HttpStatus.CREATED
+                                    );
+                                }
+                                //si el número de qr ya está en uso
+                                return new ResponseEntity<>(MensajeResponse.builder()
+                                        .mensaje("Ya existe una mesa con el mismo QR asginado")
+                                        .object(null)
+                                        .build()
+                                        , HttpStatus.CONFLICT
+                                );
+                            }
+                            //si no se hara cambio de numero de qr
+                            else if(mesa.getQr().getId() == mesaDto.getQr().getId()){
+                                mesaUpdate = mesaService.save(mesaDto);
+
+                                return new ResponseEntity<>(
+                                        MensajeResponse.builder()
+                                                .mensaje("Ok")
+                                                .object(
+                                                        MesaDto.builder()
+                                                                .id(mesaUpdate.getId())
+                                                                .numeroMesa(mesaUpdate.getNumeroMesa())
+                                                                .estado(mesaUpdate.getEstado())
+                                                                .qr(QrDto.builder()
+                                                                        .id(mesaUpdate.getQr().getId())
+                                                                        .ruta(mesaUpdate.getQr().getRuta())
+                                                                        .url(mesaUpdate.getQr().getUrl())
+                                                                        .build())
+                                                                .build()
+                                                )
+                                                .build()
+                                        , HttpStatus.CREATED
+                                );
+                            }
+                        }
+
+
 
 
                     }
@@ -306,41 +330,7 @@ public class MesaController {
                 //en caso de que los numeros de mesa si sean los mismos
                 if (mesa.getNumeroMesa() == mesaDto.getNumeroMesa()) {
 
-                    if(mesa.getQr().getId() != mesaDto.getQr().getId()) {
-                        Mesa mesaQrId = mesaService.findByQrId(mesaDto.getQr().getId());
-                        if(mesaQrId == null){
-                            mesaUpdate = mesaService.save(mesaDto);
-
-                            return new ResponseEntity<>(
-                                    MensajeResponse.builder()
-                                            .mensaje("Ok")
-                                            .object(
-                                                    MesaDto.builder()
-                                                            .id(mesaUpdate.getId())
-                                                            .numeroMesa(mesaUpdate.getNumeroMesa())
-                                                            .qr(QrDto.builder()
-                                                                    .id(mesaUpdate.getQr().getId())
-                                                                    .ruta(mesaUpdate.getQr().getRuta())
-                                                                    .url(mesaUpdate.getQr().getUrl())
-                                                                    .build())
-                                                            .estadoMesa(EstadoMesaDto.builder()
-                                                                    .id(mesaUpdate.getEstadoMesa().getId())
-                                                                    .nombre(mesaUpdate.getEstadoMesa().getNombre())
-                                                                    .build())
-                                                            .build()
-                                            )
-                                            .build()
-                                    , HttpStatus.CREATED
-                            );
-                        }
-                        return new ResponseEntity<>(MensajeResponse.builder()
-                                .mensaje("Ya existe una mesa con el mismo QR asginado")
-                                .object(null)
-                                .build()
-                                , HttpStatus.CONFLICT
-                        );
-                    }
-                    else if(mesa.getQr().getId() == mesaDto.getQr().getId()){
+                    if(mesa.getQr() == null){
                         mesaUpdate = mesaService.save(mesaDto);
 
                         return new ResponseEntity<>(
@@ -350,21 +340,69 @@ public class MesaController {
                                                 MesaDto.builder()
                                                         .id(mesaUpdate.getId())
                                                         .numeroMesa(mesaUpdate.getNumeroMesa())
-                                                        .qr(QrDto.builder()
-                                                                .id(mesaUpdate.getQr().getId())
-                                                                .ruta(mesaUpdate.getQr().getRuta())
-                                                                .url(mesaUpdate.getQr().getUrl())
-                                                                .build())
-                                                        .estadoMesa(EstadoMesaDto.builder()
-                                                                .id(mesaUpdate.getEstadoMesa().getId())
-                                                                .nombre(mesaUpdate.getEstadoMesa().getNombre())
-                                                                .build())
+                                                        .estado(mesaUpdate.getEstado())
+                                                        .qr(null)
                                                         .build()
                                         )
                                         .build()
                                 , HttpStatus.CREATED
                         );
+                    }else{
+                        if(mesa.getQr().getId() != mesaDto.getQr().getId()) {
+                            Mesa mesaQrId = mesaService.findByQrId(mesaDto.getQr().getId());
+                            if(mesaQrId == null){
+                                mesaUpdate = mesaService.save(mesaDto);
+
+                                return new ResponseEntity<>(
+                                        MensajeResponse.builder()
+                                                .mensaje("Ok")
+                                                .object(
+                                                        MesaDto.builder()
+                                                                .id(mesaUpdate.getId())
+                                                                .numeroMesa(mesaUpdate.getNumeroMesa())
+                                                                .estado(mesaUpdate.getEstado())
+                                                                .qr(QrDto.builder()
+                                                                        .id(mesaUpdate.getQr().getId())
+                                                                        .ruta(mesaUpdate.getQr().getRuta())
+                                                                        .url(mesaUpdate.getQr().getUrl())
+                                                                        .build())
+                                                                .build()
+                                                )
+                                                .build()
+                                        , HttpStatus.CREATED
+                                );
+                            }
+                            return new ResponseEntity<>(MensajeResponse.builder()
+                                    .mensaje("Ya existe una mesa con el mismo QR asginado")
+                                    .object(null)
+                                    .build()
+                                    , HttpStatus.CONFLICT
+                            );
+                        }
+                        else if(mesa.getQr().getId() == mesaDto.getQr().getId()){
+                            mesaUpdate = mesaService.save(mesaDto);
+
+                            return new ResponseEntity<>(
+                                    MensajeResponse.builder()
+                                            .mensaje("Ok")
+                                            .object(
+                                                    MesaDto.builder()
+                                                            .id(mesaUpdate.getId())
+                                                            .numeroMesa(mesaUpdate.getNumeroMesa())
+                                                            .estado(mesaUpdate.getEstado())
+                                                            .qr(QrDto.builder()
+                                                                    .id(mesaUpdate.getQr().getId())
+                                                                    .ruta(mesaUpdate.getQr().getRuta())
+                                                                    .url(mesaUpdate.getQr().getUrl())
+                                                                    .build())
+                                                            .build()
+                                            )
+                                            .build()
+                                    , HttpStatus.CREATED
+                            );
+                        }
                     }
+
 
                 }
 
@@ -383,6 +421,33 @@ public class MesaController {
                     .build()
                     , HttpStatus.INTERNAL_SERVER_ERROR
             );
+        }
+    }
+
+    //BUSCAR MESA POR NUMERO DE MESA
+    @GetMapping("mesa/numero-mesa/{numero}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> numeroMesa(@PathVariable Integer numero){
+        List<Mesa> mesa;
+
+        try{
+            mesa = mesaService.finNumeroMesa(numero);
+
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje("OK")
+                            .object(mesa)
+                            .build()
+                    , HttpStatus.OK
+            );
+        }catch(DataAccessException exDt){
+
+            return new ResponseEntity<>(MensajeResponse
+                    .builder()
+                    .mensaje(exDt.getMessage())
+                    .object(null)
+                    .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -14,6 +14,7 @@ public interface IMesaService {
     Mesa findById(Integer id);
     void delete(Mesa mesa);
     Mesa findByNumMesa(Integer numeroMesa);
+    List<Mesa> finNumeroMesa(Integer numero);
     Mesa findByQrId(Integer qrId);
     List<Mesa> listAll();
     Page<Mesa> mesasPaginadas(Pageable pageable);
