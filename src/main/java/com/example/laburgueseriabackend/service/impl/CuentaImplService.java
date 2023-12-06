@@ -20,14 +20,12 @@ public class CuentaImplService implements ICuentaService {
     private CuentaDao cuentaDao;
     @Override
     public Cuenta save(@NotNull CuentaDto cuentaDto) {
-        //fecha
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        String fechaFormateada = dateFormat.format(new Date()); // Obtiene la fecha y hora actual formateada
+
 
 
         Cuenta cuenta = Cuenta.builder()
                 .id(cuentaDto.getId())
-                .fecha(fechaFormateada)
+                .fecha(cuentaDto.getFecha())
                 .estadoCuenta(cuentaDto.getEstadoCuenta())
                 .mesa(cuentaDto.getMesa())
                 .build();

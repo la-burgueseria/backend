@@ -8,6 +8,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -25,7 +26,8 @@ public class Cuenta implements Serializable {
     private Integer id;
 
     @Column(name = "fecha")
-    private String fecha;
+    private LocalDateTime fecha;
+
     // ORGANIZAR RELACION ENTRE CUENTA Y PRODUCTOS CON LA ENTIDAD INTERMEDIA
     @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
@@ -35,9 +37,26 @@ public class Cuenta implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "estado_cuenta_id")
     private EstadoCuenta estadoCuenta;
+    //relacion  one to manycon ingreso_cuenta
+    @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonBackReference
+    @JsonIgnore
+    private List<IngresoCuenta> ingresoCuentas;
     //relacion con mesas
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "mesa_id")
     private Mesa mesa;
 
+
+    //relacion con empleado_cuenta
+    @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonBackReference
+    @JsonIgnore
+    private List<EmpleadoCuenta> empleadoCuentas;
+
+
+    @PrePersist
+    protected void onCreate() {
+        fecha = LocalDateTime.now();
+    }
 }
