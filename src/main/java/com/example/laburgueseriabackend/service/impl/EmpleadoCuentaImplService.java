@@ -49,4 +49,9 @@ public class EmpleadoCuentaImplService implements IEmpleadoCuentaService {
     public List<EmpleadoCuenta> cuentasDeEmpleado(Integer id) {
         return (List<EmpleadoCuenta>) empleadoCuentaDao.cuentasDeEmpleado(id);
     }
+
+    @Override
+    public EmpleadoCuenta empleadoEnCuenta(Integer id) {
+        return empleadoCuentaDao.empleadoEnCuenta(id);
+    }
 }

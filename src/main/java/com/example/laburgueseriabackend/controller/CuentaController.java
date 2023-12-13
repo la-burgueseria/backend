@@ -7,6 +7,9 @@ import com.example.laburgueseriabackend.service.ICuentaService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,11 +69,13 @@ public class CuentaController {
                             .mensaje("Cuenta creada exitosamente")
                             .object(
                                     Cuenta.builder()
-                                            .id(cuentaDto.getId())
+                                            .id(cuentaSave.getId())
                                             .fecha(cuentaSave.getFecha())
                                             .estadoCuenta(cuentaDto.getEstadoCuenta())
                                             .mesa(cuentaDto.getMesa())
                                             .cuentaProductos(cuentaDto.getCuentaProductos())
+                                            .total(cuentaSave.getTotal())
+                                            .abono(cuentaSave.getAbono())
                                             .build()
                             )
                             .build()
@@ -105,6 +110,8 @@ public class CuentaController {
                                                 .cuentaProductos(cuenta.getCuentaProductos())
                                                 .mesa(cuenta.getMesa())
                                                 .fecha(cuenta.getFecha())
+                                                .total(cuenta.getTotal())
+                                                .abono(cuenta.getAbono())
                                                 .build()
                                 )
                                 .build()
@@ -171,6 +178,8 @@ public class CuentaController {
                                                 .cuentaProductos(cuentaUpdate.getCuentaProductos())
                                                 .mesa(cuentaUpdate.getMesa())
                                                 .fecha(cuentaUpdate.getFecha())
+                                                .total(cuentaUpdate.getTotal())
+                                                .abono(cuentaUpdate.getAbono())
                                                 .build()
                                 )
                                 .build()
@@ -191,5 +200,25 @@ public class CuentaController {
                     , HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
+    }
+    //CUENTAS PAGINADAS
+    @GetMapping("cuentas-page")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Page<Cuenta>> cuentasPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String order,
+            @RequestParam(defaultValue = "true") boolean asc
+    ){
+        Page<Cuenta> cuentas = cuentaService.cuentasPaginadas(
+                PageRequest.of(page, size, Sort.by(order))
+        );
+
+        if(!asc){
+            cuentas = cuentaService.cuentasPaginadas(
+                    PageRequest.of(page, size, Sort.by(order).descending())
+            );
+        }
+        return new ResponseEntity<Page<Cuenta>>(cuentas, HttpStatus.OK);
     }
 }

@@ -28,17 +28,15 @@ public class Ingreso implements Serializable {
     private String metodoPago;
     @Column(name = "total")
     private Double total;
-    //relacion one to many con ingresoCuenta
-    @OneToMany(mappedBy = "ingreso", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonBackReference
-    @JsonIgnore
-    private List<IngresoCuenta> ingresoCuentas;
     //relacion con reporte mensual
     @OneToMany(mappedBy = "ingreso", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonBackReference
     @JsonIgnore
     private List<ReporteIngreso> reporteIngresos;
-
+    //relacion con cuenta
+    @OneToOne
+    @JoinColumn(name = "cuenta_id")
+    private Cuenta cuenta;
     @PrePersist
     protected void onCreate() {
         fecha = LocalDateTime.now();

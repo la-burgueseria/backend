@@ -7,6 +7,8 @@ import com.example.laburgueseriabackend.model.entity.Producto;
 import com.example.laburgueseriabackend.service.ICuentaService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -26,6 +28,8 @@ public class CuentaImplService implements ICuentaService {
         Cuenta cuenta = Cuenta.builder()
                 .id(cuentaDto.getId())
                 .fecha(cuentaDto.getFecha())
+                .total(cuentaDto.getTotal())
+                .abono(cuentaDto.getAbono())
                 .estadoCuenta(cuentaDto.getEstadoCuenta())
                 .mesa(cuentaDto.getMesa())
                 .build();
@@ -51,5 +55,10 @@ public class CuentaImplService implements ICuentaService {
     @Override
     public Boolean existsById(Integer id) {
         return cuentaDao.existsById(id);
+    }
+
+    @Override
+    public Page<Cuenta> cuentasPaginadas(Pageable pageable) {
+        return cuentaDao.findAll(pageable);
     }
 }

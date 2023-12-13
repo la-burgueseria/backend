@@ -19,17 +19,11 @@ public class CuentaProductosImplService implements ICuentaProductosService {
     private IProductoService productoService;
     @Override
     public CuentaProductos save(CuentaProductosDto cuentaProductosDto) {
-        // obtener el producto
-        Producto producto = productoService.findById(cuentaProductosDto.getProducto().getId());
-        //calcular el total
-        Double precioProducto = producto.getPrecio();
-
-        Double total = precioProducto * (double) cuentaProductosDto.getCantidad();
 
         CuentaProductos cuentaProductos = CuentaProductos.builder()
                 .id(cuentaProductosDto.getId())
                 .cantidad(cuentaProductosDto.getCantidad())
-                .total(total)
+                .estado(cuentaProductosDto.getEstado())
                 .cuenta(cuentaProductosDto.getCuenta())
                 .producto(cuentaProductosDto.getProducto())
                 .build();
@@ -55,5 +49,10 @@ public class CuentaProductosImplService implements ICuentaProductosService {
     @Override
     public Boolean existsById(Integer id) {
         return cuentaProductosDao.existsById(id);
+    }
+
+    @Override
+    public List<CuentaProductos> getCuentaProductosByCuenta(Integer cuentaId) {
+        return (List<CuentaProductos>) cuentaProductosDao.getCuentaProductosByCuenta(cuentaId);
     }
 }

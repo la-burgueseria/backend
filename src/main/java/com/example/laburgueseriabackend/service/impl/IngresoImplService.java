@@ -25,6 +25,7 @@ public class IngresoImplService  implements IIngresoService {
                 .fecha(ingresoDto.getFecha())
                 .metodoPago(ingresoDto.getMetodoPago())
                 .total(ingresoDto.getTotal())
+                .cuenta(ingresoDto.getCuenta())
                 .build();
         return ingresoDao.save(ingreso);
     }

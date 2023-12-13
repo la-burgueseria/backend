@@ -12,4 +12,5 @@ public interface IEmpleadoCuentaService {
     Boolean existsById(Integer id);
     List<EmpleadoCuenta> listAll();
     List<EmpleadoCuenta> cuentasDeEmpleado(Integer id);
+    EmpleadoCuenta empleadoEnCuenta(Integer id);
 }

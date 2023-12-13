@@ -27,6 +27,10 @@ public class Cuenta implements Serializable {
 
     @Column(name = "fecha")
     private LocalDateTime fecha;
+    @Column(name = "total")
+    private Double total;
+    @Column(name = "abono")
+    private Double abono;
 
     // ORGANIZAR RELACION ENTRE CUENTA Y PRODUCTOS CON LA ENTIDAD INTERMEDIA
     @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -37,22 +41,23 @@ public class Cuenta implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "estado_cuenta_id")
     private EstadoCuenta estadoCuenta;
-    //relacion  one to manycon ingreso_cuenta
-    @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonBackReference
-    @JsonIgnore
-    private List<IngresoCuenta> ingresoCuentas;
+
     //relacion con mesas
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "mesa_id")
     private Mesa mesa;
 
+    //relacion con ingreso
+    @OneToOne(mappedBy = "cuenta")
+    @JsonIgnore
+    private Ingreso ingreso;
+
 
     //relacion con empleado_cuenta
     @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonBackReference
     @JsonIgnore
     private List<EmpleadoCuenta> empleadoCuentas;
+
 
 
     @PrePersist

@@ -18,6 +18,8 @@ public class CuentaDto {
     private Integer id;
     private Mesa mesa;
     private EstadoCuenta estadoCuenta;
+    private Double total;
+    private Double abono;
     @JsonIgnore
     private List<CuentaProductos> cuentaProductos;
     private LocalDateTime fecha;

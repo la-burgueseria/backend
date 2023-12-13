@@ -36,7 +36,7 @@ public class CuentaProductosController {
                                             .id(cuentaProductosSave.getId())
                                             .cantidad(cuentaProductosSave.getCantidad())
                                             .cuenta(cuentaProductosSave.getCuenta())
-
+                                            .producto(cuentaProductosSave.getProducto())
                                             .build()
                             )
                             .build()
@@ -86,6 +86,28 @@ public class CuentaProductosController {
             );
         }
     }
+    @GetMapping("cuenta-productos/cuenta/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> showByCuentaId(@PathVariable Integer id){
+        try{
+            List<CuentaProductos> cuentaProductos = cuentaProductosService.getCuentaProductosByCuenta(id);
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje("Ok")
+                            .object(cuentaProductos)
+                            .build()
+                    , HttpStatus.OK
+            );
+        }catch (DataAccessException exDt){
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje(exDt.getMessage())
+                            .object(null)
+                            .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
     //BUSCAR POR ID
     @GetMapping("cuenta-productos/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -102,8 +124,9 @@ public class CuentaProductosController {
                                                 .id(cuentaProductos.getId())
                                                 .producto(cuentaProductos.getProducto())
                                                 .cantidad(cuentaProductos.getCantidad())
-                                                .total(cuentaProductos.getTotal())
+                                                .estado(cuentaProductos.getEstado())
                                                 .cuenta(cuentaProductos.getCuenta())
+                                                .build()
                                 )
                                 .build()
                         ,HttpStatus.FOUND
@@ -172,7 +195,7 @@ public class CuentaProductosController {
                                                 .id(cuentaProductosUpdate.getId())
                                                 .producto(cuentaProductosUpdate.getProducto())
                                                 .cantidad(cuentaProductosUpdate.getCantidad())
-                                                .total(cuentaProductosUpdate.getTotal())
+                                                .estado(cuentaProductosUpdate.getEstado())
                                                 .cuenta(cuentaProductosUpdate.getCuenta())
                                                 .build()
                                 )

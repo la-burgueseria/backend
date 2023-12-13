@@ -1,5 +1,6 @@
 package com.example.laburgueseriabackend.model.dto;
 
+import com.example.laburgueseriabackend.model.entity.Cuenta;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -14,4 +15,5 @@ public class IngresoDto {
     private LocalDateTime fecha;
     private String metodoPago;
     private Double total;
+    private Cuenta cuenta;
 }

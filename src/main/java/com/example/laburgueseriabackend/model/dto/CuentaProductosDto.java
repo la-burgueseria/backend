@@ -15,6 +15,6 @@ public class CuentaProductosDto {
     private Cuenta cuenta;
     private Producto producto;
     private Integer cantidad;
-    private Double total;
+    private String estado;
 
 }

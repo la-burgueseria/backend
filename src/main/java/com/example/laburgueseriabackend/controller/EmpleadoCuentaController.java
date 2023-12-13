@@ -100,6 +100,45 @@ public class EmpleadoCuentaController  {
                                                 .empleado(empleadoCuenta.getEmpleado())
                                                 .build()
                                 )
+                                .build()
+                        , HttpStatus.FOUND
+                );
+            }
+            return new ResponseEntity<>(MensajeResponse
+                    .builder()
+                    .mensaje("Registro no encontrado")
+                    .object(null)
+                    .build()
+                    , HttpStatus.NOT_FOUND);
+        }catch (DataAccessException exDt){
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje(exDt.getMessage())
+                            .object(null)
+                            .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+    //BUSCAR EMPLEADO CUENTA POR CUENTA ID
+    @GetMapping("empleado-cuenta/cuenta/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> showByCuentaId(@PathVariable Integer id){
+        try{
+            EmpleadoCuenta empleadoCuenta = empleadoCuentaService.empleadoEnCuenta(id);
+
+            if(empleadoCuenta != null){
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("Ok, encontrado")
+                                .object(
+                                        EmpleadoCuentaDto.builder()
+                                                .id(empleadoCuenta.getId())
+                                                .cuenta(empleadoCuenta.getCuenta())
+                                                .empleado(empleadoCuenta.getEmpleado())
+                                                .build()
+                                )
+                                .build()
                         , HttpStatus.FOUND
                 );
             }
@@ -120,10 +159,11 @@ public class EmpleadoCuentaController  {
         }
     }
 
+
     //ELIMINAR REGISTRO
 
     @DeleteMapping("empleado-cuenta/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> delete(@PathVariable Integer id){
         EmpleadoCuenta empleadoCuenta = null;
 
@@ -137,7 +177,7 @@ public class EmpleadoCuentaController  {
                                 .mensaje("Se ha desvinculado al empleado de esta cuenta")
                                 .object(empleadoCuenta)
                                 .build()
-                        , HttpStatus.NO_CONTENT
+                        , HttpStatus.OK
                 );
             }
             return new ResponseEntity<>(

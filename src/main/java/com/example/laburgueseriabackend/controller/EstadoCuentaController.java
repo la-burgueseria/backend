@@ -20,12 +20,11 @@ public class EstadoCuentaController {
     private IEstadoCuentaService estadoCuentaService;
 
     //LISTAR TODOS LOS ESTADOS
-    @GetMapping("estados-cuentas")
+    @GetMapping("estado-cuentas")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> showAll(){
         try{
             List<EstadoCuenta> estadosCuentas = estadoCuentaService.listAll();
-
             if(estadosCuentas.isEmpty()){
                 return new ResponseEntity<>(
                         MensajeResponse.builder()
