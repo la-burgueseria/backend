@@ -9,6 +9,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 
@@ -62,6 +63,6 @@ public class Cuenta implements Serializable {
 
     @PrePersist
     protected void onCreate() {
-        fecha = LocalDateTime.now();
+        fecha = LocalDateTime.now(ZoneOffset.UTC);
     }
 }

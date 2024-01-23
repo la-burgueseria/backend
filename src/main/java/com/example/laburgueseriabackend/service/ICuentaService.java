@@ -5,6 +5,7 @@ import com.example.laburgueseriabackend.model.entity.Cuenta;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ICuentaService {
@@ -15,4 +16,5 @@ public interface ICuentaService {
 
     Boolean existsById(Integer id);
     Page<Cuenta> cuentasPaginadas(Pageable pageable);
+    List<Cuenta> getcuentasByFecha(LocalDateTime fechaInicio, LocalDateTime fechaFin);
 }

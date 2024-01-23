@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -60,5 +61,11 @@ public class CuentaImplService implements ICuentaService {
     @Override
     public Page<Cuenta> cuentasPaginadas(Pageable pageable) {
         return cuentaDao.findAll(pageable);
+    }
+
+    //devuelve las cuentas comprendidas en dicho rango de fechas
+    @Override
+    public List<Cuenta> getcuentasByFecha(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+        return cuentaDao.getcuentasByFecha(fechaInicio, fechaFin);
     }
 }

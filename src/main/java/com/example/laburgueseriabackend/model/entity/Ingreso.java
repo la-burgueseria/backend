@@ -8,6 +8,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @Data //anotacion de lombok crea automaticament todos los metodos basicos, setters y getters
@@ -39,7 +40,7 @@ public class Ingreso implements Serializable {
     private Cuenta cuenta;
     @PrePersist
     protected void onCreate() {
-        fecha = LocalDateTime.now();
+        fecha = LocalDateTime.now(ZoneOffset.UTC);
     }
 
 }

@@ -10,11 +10,15 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.xml.crypto.Data;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -134,6 +138,43 @@ public class CuentaController {
             );
         }
     }
+    //obtener cuentas dentro del horario establecido
+    //dia actual desde las 12:00p.m. hasta el dia siguiente a las 11:59 a.m.
+    @GetMapping("cuenta/fechas")
+    public ResponseEntity<?> getcuentasByFecha(
+            @RequestHeader(value = "fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
+            @RequestHeader(value = "fechaFin", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin)
+    {
+        // Establecer la hora a las 12:00 p.m.
+        LocalDateTime fechaInicioConHora = LocalDateTime.of(LocalDate.from(fechaInicio), LocalTime.NOON); // Establecer la hora a las 12:00 p.m.
+
+        /*
+        * si fechaFin no es nulo, entonces usa fechaFin.plusDays(1).minusSeconds(1),
+        *  de lo contrario, usa fechaInicioConHora.plusDays(1).minusSeconds(1)
+        * */
+        LocalDateTime fechaFinConHora = (fechaFin != null) ? fechaFin.plusDays(1).minusSeconds(1) : fechaInicioConHora.plusDays(1).minusSeconds(1);
+
+        try{
+            List<Cuenta> cuentas = cuentaService.getcuentasByFecha(fechaInicioConHora, fechaFinConHora);
+
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje("Ok")
+                            .object(cuentas)
+                            .build()
+                    , HttpStatus.OK
+            );
+        }catch (DataAccessException exDt){
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje(exDt.getMessage())
+                            .object(null)
+                            .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
     //eliminar cuenta
     @DeleteMapping("cuenta/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

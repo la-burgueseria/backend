@@ -18,4 +18,7 @@ public interface IIngresoService {
     Page<Ingreso> ingresosPaginados(Pageable pageable);
 
     List<Ingreso> findIngresoByFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin);
+
+    //filtra por fecha y devuelve paginacion
+    Page<Ingreso> findByFechaBetween(LocalDateTime fechaInicio, LocalDateTime fechaFin, Pageable pageable);
 }

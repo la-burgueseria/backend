@@ -59,4 +59,9 @@ public class IngresoImplService  implements IIngresoService {
     public List<Ingreso> findIngresoByFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
         return ingresoDao.findIngresoByFechas(fechaInicio, fechaFin);
     }
+
+    @Override
+    public Page<Ingreso> findByFechaBetween(LocalDateTime fechaInicio, LocalDateTime fechaFin, Pageable pageable) {
+        return ingresoDao.findByFechaBetween(fechaInicio, fechaFin, pageable);
+    }
 }

@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -229,5 +231,51 @@ public class IngresoController {
                     , HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
+    }
+
+    //filtrar ingreso por fechas y devolver paginacion
+    @GetMapping("ingreso/fecha-page")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> ingresoPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String order,
+            @RequestParam(defaultValue = "true") boolean asc,
+            @RequestHeader(value = "fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
+            @RequestHeader(value = "fechaFin", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin
+    ){
+        // Establecer la hora a las 12:00 p.m.
+        LocalDateTime fechaInicioConHora = LocalDateTime.of(LocalDate.from(fechaInicio), LocalTime.NOON); // Establecer la hora a las 12:00 p.m.
+
+        /*
+         * si fechaFin no es nulo, entonces usa fechaFin.plusDays(1).minusSeconds(1),
+         *  de lo contrario, usa fechaInicioConHora.plusDays(1).minusSeconds(1)
+         * */
+        LocalDateTime fechaFinConHora = (fechaFin != null) ? fechaFin.plusDays(1).minusSeconds(1) : fechaInicioConHora.plusDays(1).minusSeconds(1);
+
+        try{
+            Page<Ingreso> ingresos = ingresoService.findByFechaBetween(fechaInicioConHora, fechaFinConHora, PageRequest.of(page, size, Sort.by(order)) );
+
+            if(!asc){
+                ingresos = ingresoService.findByFechaBetween(fechaInicioConHora, fechaFinConHora, PageRequest.of(page, size, Sort.by(order).descending()) );
+            }
+
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje("Ok")
+                            .object(ingresos)
+                            .build()
+                    , HttpStatus.OK
+            );
+        }catch (DataAccessException exDt){
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje(exDt.getMessage())
+                            .object(null)
+                            .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+
     }
 }
