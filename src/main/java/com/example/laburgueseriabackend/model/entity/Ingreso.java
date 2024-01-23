@@ -1,15 +1,12 @@
 package com.example.laburgueseriabackend.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.List;
+
 
 @Data //anotacion de lombok crea automaticament todos los metodos basicos, setters y getters
 @AllArgsConstructor // anotacion de lombok, genera un constructor con todos los argumentos de la clase
@@ -29,11 +26,6 @@ public class Ingreso implements Serializable {
     private String metodoPago;
     @Column(name = "total")
     private Double total;
-    //relacion con reporte mensual
-    @OneToMany(mappedBy = "ingreso", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonBackReference
-    @JsonIgnore
-    private List<ReporteIngreso> reporteIngresos;
     //relacion con cuenta
     @OneToOne
     @JoinColumn(name = "cuenta_id")

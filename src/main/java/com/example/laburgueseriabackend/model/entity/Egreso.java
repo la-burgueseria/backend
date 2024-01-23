@@ -1,11 +1,10 @@
 package com.example.laburgueseriabackend.model.entity;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @Data
@@ -21,16 +20,15 @@ public class Egreso implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "fecha")
-    private String fecha;
+    private LocalDateTime fecha;
     @Column(name = "total")
     private Double total;
-    @Column(name = "Observaciones")
-    private String observaciones;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "tipo_egreso_id")
-    private TipoEgreso tipoEgreso;
-    @OneToMany(mappedBy = "egreso", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonBackReference
-    @JsonIgnore
-    private List<ReporteEgreso> reporteEgresos;
+    @Column(name = "descripcion")
+    private String descripcion;
+    @Column(name = "categoria")
+    private String categoria;
+
+    //asignar la hora actual UTC al momento en el que se crea un nuevo registro en la entidad
+    @PrePersist
+    protected void onCreate(){fecha = LocalDateTime.now(ZoneOffset.UTC);}
 }
