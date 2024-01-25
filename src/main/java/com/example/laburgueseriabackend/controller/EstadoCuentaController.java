@@ -127,7 +127,7 @@ public class EstadoCuentaController {
                             .mensaje("No se ha encontrado el registro")
                             .object(null)
                             .build()
-                    , HttpStatus.NOT_FOUND
+                    , HttpStatus.OK
             );
         }catch (DataAccessException exDt){
             return new ResponseEntity<>(

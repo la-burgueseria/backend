@@ -174,9 +174,9 @@ public class ProductoController {
             return new ResponseEntity<>(
                     MensajeResponse.builder()
                             .mensaje("No hay registros en el sistema")
-                            .object(null)
+                            .object(productos)
                             .build()
-                    , HttpStatus.NOT_FOUND
+                    , HttpStatus.OK
             );
         }
 

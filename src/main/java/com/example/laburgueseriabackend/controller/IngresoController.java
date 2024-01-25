@@ -76,7 +76,7 @@ public class IngresoController {
                                 .mensaje("No hay registros para ingresos")
                                 .object(null)
                                 .build()
-                        , HttpStatus.NOT_FOUND
+                        , HttpStatus.OK
                 );
             }
 
@@ -141,7 +141,7 @@ public class IngresoController {
                     .mensaje("Registro no encontrado")
                     .object(null)
                     .build()
-                    , HttpStatus.NOT_FOUND);
+                    , HttpStatus.OK);
         }catch (DataAccessException exDt){
             return new ResponseEntity<>(
                     MensajeResponse.builder()
@@ -213,7 +213,7 @@ public class IngresoController {
                                 .mensaje("No hay registros para ingresos")
                                 .object(null)
                                 .build()
-                        , HttpStatus.NOT_FOUND
+                        , HttpStatus.OK
                 );
             }
             return new ResponseEntity<>(
