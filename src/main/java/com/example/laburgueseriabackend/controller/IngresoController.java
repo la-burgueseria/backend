@@ -244,14 +244,11 @@ public class IngresoController {
             @RequestHeader(value = "fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
             @RequestHeader(value = "fechaFin", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin
     ){
-        // Establecer la hora a las 12:00 p.m.
-        LocalDateTime fechaInicioConHora = LocalDateTime.of(LocalDate.from(fechaInicio), LocalTime.NOON); // Establecer la hora a las 12:00 p.m.
+        // Establecer la hora a las 12:00 a.m.
+        LocalDateTime fechaInicioConHora = LocalDateTime.of(LocalDate.from(fechaInicio), LocalTime.MIN); // Establecer la hora a las 12:00 p.m.
 
-        /*
-         * si fechaFin no es nulo, entonces usa fechaFin.plusDays(1).minusSeconds(1),
-         *  de lo contrario, usa fechaInicioConHora.plusDays(1).minusSeconds(1)
-         * */
-        LocalDateTime fechaFinConHora = (fechaFin != null) ? fechaFin.plusDays(1).minusSeconds(1) : fechaInicioConHora.plusDays(1).minusSeconds(1);
+        // Establecer la hora a las 23:59:59 para fechaFin, o usar la fechaInicioConHora si fechaFin es nulo
+        LocalDateTime fechaFinConHora = (fechaFin != null) ? fechaFin.with(LocalTime.MAX) : fechaInicioConHora.with(LocalTime.MAX);
 
         try{
             Page<Ingreso> ingresos = ingresoService.findByFechaBetween(fechaInicioConHora, fechaFinConHora, PageRequest.of(page, size, Sort.by(order)) );

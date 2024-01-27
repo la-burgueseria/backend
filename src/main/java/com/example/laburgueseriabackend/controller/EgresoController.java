@@ -133,14 +133,11 @@ public class EgresoController {
             @RequestHeader(value = "fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
             @RequestHeader(value = "fechaFin", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin
     ){
-        // Establecer la hora a las 12:00 p.m.
-        LocalDateTime fechaInicioConHora = LocalDateTime.of(LocalDate.from(fechaInicio), LocalTime.NOON); // Establecer la hora a las 12:00 p.m.
+        // Establecer la hora a las 12:00 a.m.
+        LocalDateTime fechaInicioConHora = LocalDateTime.of(LocalDate.from(fechaInicio), LocalTime.MIN); // Establecer la hora a las 12:00 p.m.
 
-        /*
-         * si fechaFin no es nulo, entonces usa fechaFin.plusDays(1).minusSeconds(1),
-         *  de lo contrario, usa fechaInicioConHora.plusDays(1).minusSeconds(1)
-         * */
-        LocalDateTime fechaFinConHora = (fechaFin != null) ? fechaFin.plusDays(1).minusSeconds(1) : fechaInicioConHora.plusDays(1).minusSeconds(1);
+        // Establecer la hora a las 23:59:59 para fechaFin, o usar la fechaInicioConHora si fechaFin es nulo
+        LocalDateTime fechaFinConHora = (fechaFin != null) ? fechaFin.with(LocalTime.MAX) : fechaInicioConHora.with(LocalTime.MAX);
 
         try{
             Page<Egreso> egresos = egresoService.findByFechaBetween(fechaInicioConHora, fechaFinConHora, PageRequest.of(page, size, Sort.by(order)) );
@@ -164,6 +161,30 @@ public class EgresoController {
                             .build()
                     , HttpStatus.INTERNAL_SERVER_ERROR
             );
+        }
+    }
+
+    //ELIMINAR EGRESO
+    @DeleteMapping("egreso/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<?> delete(@PathVariable Integer id){
+        try{
+            Egreso egresoDelete = egresoService.findById(id);
+            egresoService.delete(egresoDelete);
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje("El egreso ha sido eliminado correctamente.")
+                            .object(null)
+                            .build()
+                    , HttpStatus.NO_CONTENT
+            );
+        }catch (DataAccessException exDt){
+            return new ResponseEntity<>(MensajeResponse
+                    .builder()
+                    .mensaje(exDt.getMessage())
+                    .object(null)
+                    .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
