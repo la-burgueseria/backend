@@ -29,26 +29,47 @@ public class GestionCajaController {
         GestionCaja gestionCajaSave = null;
 
         try {
-         gestionCajaSave = gestionCajaService.save(gestionCajaDto);
 
-         return new ResponseEntity<>(
-                 MensajeResponse.builder()
-                         .mensaje("Nuevo registro de caja creado correctamente")
-                         .object(
-                                 GestionCajaDto.builder()
-                                         .id(gestionCajaSave.getId())
-                                         .totalCalculado(gestionCajaSave.getTotalCalculado())
-                                         .totalReportado(gestionCajaSave.getTotalReportado())
-                                         .saldoInicioCajaMenor(gestionCajaSave.getSaldoInicioCajaMenor())
-                                         .observaciones(gestionCajaSave.getObservaciones())
-                                         .fechaHorainicio(gestionCajaSave.getFechaHorainicio())
-                                         .fechaHoraCierre(gestionCajaSave.getFechaHoraCierre())
-                                         .estadoCaja(gestionCajaSave.getEstadoCaja())
-                                         .build()
-                         )
-                         .build()
-                 , HttpStatus.CREATED
-         );
+            //buscar si ya hay una caja abierta ese mismo dia
+            // Establecer la hora a las 12:00 p.m.
+            LocalDateTime fechaInicioConHora = LocalDateTime.of(LocalDate.from(gestionCajaDto.getFechaHorainicio()), LocalTime.NOON); // Establecer la hora a las 12:00 p.m.
+
+            LocalDateTime fechaFinConHora = fechaInicioConHora.plusDays(1).minusSeconds(1);
+
+            List<GestionCaja> gestionCajas = gestionCajaService.findGestionCajaByFechaHorainicio(fechaInicioConHora, fechaFinConHora);
+
+            //Si no se encontraron registros que coincidan:
+            if(gestionCajas.isEmpty()){
+                gestionCajaSave = gestionCajaService.save(gestionCajaDto);
+
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("Nuevo registro de caja creado correctamente")
+                                .object(
+                                        GestionCajaDto.builder()
+                                                .id(gestionCajaSave.getId())
+                                                .totalCalculado(gestionCajaSave.getTotalCalculado())
+                                                .totalReportado(gestionCajaSave.getTotalReportado())
+                                                .saldoInicioCajaMenor(gestionCajaSave.getSaldoInicioCajaMenor())
+                                                .observaciones(gestionCajaSave.getObservaciones())
+                                                .fechaHorainicio(gestionCajaSave.getFechaHorainicio())
+                                                .fechaHoraCierre(gestionCajaSave.getFechaHoraCierre())
+                                                .estadoCaja(gestionCajaSave.getEstadoCaja())
+                                                .build()
+                                )
+                                .build()
+                        , HttpStatus.CREATED
+                );
+            }else{ //En caso de que ya haya un registro de caja iniciado
+              return new ResponseEntity<>(
+                      MensajeResponse.builder()
+                              .mensaje("Ya se ha iniciado este dia laboral")
+                              .object(null)
+                              .build()
+                      , HttpStatus.CONFLICT
+              );
+            }
+
         }catch (DataAccessException exDt){
             return new ResponseEntity<>(
                     MensajeResponse.builder()
@@ -174,6 +195,34 @@ public class GestionCajaController {
                     .build()
                     , HttpStatus.INTERNAL_SERVER_ERROR
             );
+        }
+    }
+    //eliminar gestion caja
+    @DeleteMapping("gestion-caja/{id}")
+    public ResponseEntity<?> delete(@PathVariable Integer id){
+        try{
+            GestionCaja gestionCajaDelete = gestionCajaService.findById(id);
+            if(gestionCajaDelete != null){
+                gestionCajaService.delete(gestionCajaDelete);
+                return new ResponseEntity<>(gestionCajaDelete, HttpStatus.NO_CONTENT);
+            }
+            else{
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("No se ha encontrado el elemento a eliminar")
+                                .object(null)
+                                .build()
+                        , HttpStatus.NOT_FOUND
+                );
+            }
+        }catch(DataAccessException exDt){
+
+            return new ResponseEntity<>(MensajeResponse
+                    .builder()
+                    .mensaje(exDt.getMessage())
+                    .object(null)
+                    .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
