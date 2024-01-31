@@ -15,4 +15,5 @@ public class EgresoDto {
     private String descripcion;
     private Double total;
     private String categoria;
+    private String deduccionDesde;
 }

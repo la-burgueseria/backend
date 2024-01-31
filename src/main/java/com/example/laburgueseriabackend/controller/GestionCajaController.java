@@ -63,7 +63,7 @@ public class GestionCajaController {
             }else{ //En caso de que ya haya un registro de caja iniciado
               return new ResponseEntity<>(
                       MensajeResponse.builder()
-                              .mensaje("Ya se ha iniciado este dia laboral")
+                              .mensaje("Ya se ha iniciado o finalizado este dia laboral")
                               .object(null)
                               .build()
                       , HttpStatus.CONFLICT
@@ -130,7 +130,6 @@ public class GestionCajaController {
          *  de lo contrario, usa fechaInicioConHora.plusDays(1).minusSeconds(1)
          * */
         LocalDateTime fechaFinConHora = (fechaFin != null) ? fechaFin.plusDays(1).minusSeconds(1) : fechaInicioConHora.plusDays(1).minusSeconds(1);
-
         try{
             List<GestionCaja> gestionCajas = gestionCajaService.findGestionCajaByFechaHorainicio(fechaInicioConHora, fechaFinConHora);
 

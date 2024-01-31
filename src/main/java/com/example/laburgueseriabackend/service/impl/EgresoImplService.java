@@ -25,6 +25,7 @@ public class EgresoImplService implements IEgresoService {
                 .descripcion(egresoDto.getDescripcion())
                 .categoria(egresoDto.getCategoria())
                 .total(egresoDto.getTotal())
+                .deduccionDesde(egresoDto.getDeduccionDesde())
                 .build();
         return egresoDao.save(egreso);
     }
@@ -57,5 +58,10 @@ public class EgresoImplService implements IEgresoService {
     @Override
     public Page<Egreso> findByFechaBetween(LocalDateTime fechaInicio, LocalDateTime fechaFin, Pageable pageable) {
         return egresoDao.findByFechaBetween(fechaInicio, fechaFin, pageable);
+    }
+
+    @Override
+    public List<Egreso> findEgresoByFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+        return egresoDao.findEgresoByFechas(fechaInicio, fechaFin);
     }
 }

@@ -101,25 +101,38 @@ public class EgresoController {
     }
 
     //paginacion egresos
-    @GetMapping("egresos-page")
+    @GetMapping("egresos/fechas-horario-laboral")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> egresosPage(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String order,
-            @RequestParam(defaultValue = "true") boolean asc
+            @RequestHeader(value = "fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
+            @RequestHeader(value = "fechaFin", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin
     ){
-        Page<Egreso> egresos  = egresoService.egresosPaginados(
-                PageRequest.of(page, size, Sort.by(order))
-        );
 
-        if(!asc){
-            egresos = egresoService.egresosPaginados(
-                    PageRequest.of(page, size, Sort.by(order).descending())
+        // Establecer la hora a las 12:00 a.m.
+        LocalDateTime fechaInicioConHora = LocalDateTime.of(LocalDate.from(fechaInicio), LocalTime.MIN); // Establecer la hora a las 12:00 p.m.
+
+        // Establecer la hora a las 23:59:59 para fechaFin, o usar la fechaInicioConHora si fechaFin es nulo
+        LocalDateTime fechaFinConHora = (fechaFin != null) ? fechaFin.with(LocalTime.MAX) : fechaInicioConHora.with(LocalTime.MAX);
+
+        try{
+           List<Egreso> egresos = egresoService.findEgresoByFechas(fechaInicioConHora, fechaFinConHora);
+
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje("Ok")
+                            .object(egresos)
+                            .build()
+                    , HttpStatus.OK
+            );
+
+        }catch (DataAccessException exDt){
+            return new ResponseEntity<>(MensajeResponse.builder()
+                    .mensaje(exDt.getMessage())
+                    .object(null)
+                    .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
-
-        return new ResponseEntity<Page<Egreso>>(egresos, HttpStatus.OK);
     }
 
     //egresos paginados y filtrados por fechas

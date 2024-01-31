@@ -16,4 +16,5 @@ public interface IEgresoService {
     List<Egreso> listAll();
     Page<Egreso> egresosPaginados(Pageable pageable);
     Page<Egreso> findByFechaBetween(LocalDateTime fechaInicio, LocalDateTime fechaFin, Pageable pageable);
+    List<Egreso> findEgresoByFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin);
 }
