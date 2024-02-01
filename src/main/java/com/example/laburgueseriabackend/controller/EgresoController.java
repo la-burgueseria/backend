@@ -1,6 +1,7 @@
 package com.example.laburgueseriabackend.controller;
 
 import com.example.laburgueseriabackend.model.dto.EgresoDto;
+import com.example.laburgueseriabackend.model.dto.ResumenEgresoDTO;
 import com.example.laburgueseriabackend.model.entity.Egreso;
 import com.example.laburgueseriabackend.model.entity.Ingreso;
 import com.example.laburgueseriabackend.model.payload.MensajeResponse;
@@ -18,7 +19,10 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -98,6 +102,31 @@ public class EgresoController {
                     , HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
+    }
+    //resumen de egresos
+    @GetMapping("egresos/resumen")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> getResumenEgresos(){
+        List<Egreso> egresos = egresoService.listAll();
+
+        // Agrupar por fecha y sumar los valores
+        Map<String, Double> resumen = egresos.stream()
+                .collect(Collectors.groupingBy(
+                        egreso -> egreso.getFecha().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                        Collectors.summingDouble(Egreso::getTotal)
+                ));
+
+        List<ResumenEgresoDTO> resumenDTOs = resumen.entrySet().stream()
+                .map(entry -> new ResumenEgresoDTO(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(
+                MensajeResponse.builder()
+                        .mensaje("OK")
+                        .object(resumenDTOs)
+                        .build()
+                , HttpStatus.OK
+        );
     }
 
     //paginacion egresos

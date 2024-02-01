@@ -1,6 +1,7 @@
 package com.example.laburgueseriabackend.controller;
 
 import com.example.laburgueseriabackend.model.dto.GestionCajaDto;
+import com.example.laburgueseriabackend.model.dto.ResumenGestionCajaDTO;
 import com.example.laburgueseriabackend.model.entity.GestionCaja;
 import com.example.laburgueseriabackend.model.payload.MensajeResponse;
 import com.example.laburgueseriabackend.service.IGestionCajaService;
@@ -14,7 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -115,6 +119,33 @@ public class GestionCajaController {
             );
         }
     }
+
+    //resumen de cierres de caja
+    @GetMapping("gestion-caja/resumen")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> getResumenGestionCaja(){
+        List<ResumenGestionCajaDTO> resumenList = gestionCajaService.listAll().stream()
+                .map(gestionCaja -> {
+                    if(!gestionCaja.getEstadoCaja()){
+                        return ResumenGestionCajaDTO.builder()
+                                .fecha(gestionCaja.getFechaHorainicio().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                                .totalCalculado(gestionCaja.getTotalCalculado())
+                                .totalReportado(gestionCaja.getTotalReportado())
+                                .build();
+                    }
+                    return null; //devuelve null si estadoCaja es true
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(
+                MensajeResponse.builder()
+                        .mensaje("OK")
+                        .object(resumenList)
+                        .build()
+                , HttpStatus.OK
+        );
+    }
+
 
     //obtener registros de caja dentro del horario establecido
     //dia actual desde las 12:00p.m. hasta el dia siguiente a las 11:59 a.m.
