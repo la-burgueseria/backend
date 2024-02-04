@@ -154,13 +154,18 @@ public class GestionCajaController {
             @RequestHeader(value = "fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
             @RequestHeader(value = "fechaFin", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin
     ){
-        // Establecer la hora a las 12:00 p.m.
-        LocalDateTime fechaInicioConHora = LocalDateTime.of(LocalDate.from(fechaInicio), LocalTime.NOON); // Establecer la hora a las 12:00 p.m.
+        // Si la hora es menor a las 12 del medio dia, entonces le resta un dia y la asigna a las 12 del medio dia
+        //en caso contrario simplemente asigna la hora de incio al medio dia
+        LocalDateTime fechaInicioConHora = fechaInicio.toLocalTime().isBefore(LocalTime.NOON)
+                ? fechaInicio.minusDays(1).with(LocalTime.NOON)
+                : fechaInicio.with(LocalTime.NOON);
+
         /*
          * si fechaFin no es nulo, entonces usa fechaFin.plusDays(1).minusSeconds(1),
          *  de lo contrario, usa fechaInicioConHora.plusDays(1).minusSeconds(1)
          * */
         LocalDateTime fechaFinConHora = (fechaFin != null) ? fechaFin.plusDays(1).minusSeconds(1) : fechaInicioConHora.plusDays(1).minusSeconds(1);
+
         try{
             List<GestionCaja> gestionCajas = gestionCajaService.findGestionCajaByFechaHorainicio(fechaInicioConHora, fechaFinConHora);
 
@@ -181,6 +186,7 @@ public class GestionCajaController {
             );
         }
     }
+
 
     //ACTUALIZAR REGISTRO DE CAJA
     @PutMapping("gestion-caja/{id}")
