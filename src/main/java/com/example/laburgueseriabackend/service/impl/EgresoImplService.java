@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,15 +20,35 @@ public class EgresoImplService implements IEgresoService {
     private EgresoDao egresoDao;
 
     @Override
-    public Egreso save(EgresoDto egresoDto) {
-        Egreso egreso = Egreso.builder()
-                .id(egresoDto.getId())
-                .fecha(egresoDto.getFecha())
-                .descripcion(egresoDto.getDescripcion())
-                .categoria(egresoDto.getCategoria())
-                .total(egresoDto.getTotal())
-                .deduccionDesde(egresoDto.getDeduccionDesde())
-                .build();
+    public Egreso save(EgresoDto egresoDto, MultipartFile soporte) {
+        Egreso egreso = null;
+
+        try{
+            if(soporte == null){
+                egreso = Egreso.builder()
+                        .id(egresoDto.getId())
+                        .fecha(egresoDto.getFecha())
+                        .descripcion(egresoDto.getDescripcion())
+                        .categoria(egresoDto.getCategoria())
+                        .total(egresoDto.getTotal())
+                        .deduccionDesde(egresoDto.getDeduccionDesde())
+                        .soporte(null)
+                        .build();
+            }else{
+                egreso = Egreso.builder()
+                        .id(egresoDto.getId())
+                        .fecha(egresoDto.getFecha())
+                        .descripcion(egresoDto.getDescripcion())
+                        .categoria(egresoDto.getCategoria())
+                        .total(egresoDto.getTotal())
+                        .deduccionDesde(egresoDto.getDeduccionDesde())
+                        .soporte(soporte.getBytes())
+                        .build();
+            }
+        }catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         return egresoDao.save(egreso);
     }
 

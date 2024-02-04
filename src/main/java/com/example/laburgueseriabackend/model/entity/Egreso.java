@@ -30,7 +30,9 @@ public class Egreso implements Serializable {
 
     @Column(name = "deduccion_desde", nullable = true)
     private String deduccionDesde;
-
+    //soporte de los egresos
+    @Column(name = "soporte", length = 1000000, nullable = true)
+    private byte[] soporte;
     //asignar la hora actual UTC al momento en el que se crea un nuevo registro en la entidad
     @PrePersist
     protected void onCreate(){fecha = LocalDateTime.now(ZoneOffset.UTC);}

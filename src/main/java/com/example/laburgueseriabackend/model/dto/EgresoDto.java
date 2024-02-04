@@ -16,4 +16,5 @@ public class EgresoDto {
     private Double total;
     private String categoria;
     private String deduccionDesde;
+    private byte[] soporte;
 }

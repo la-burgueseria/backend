@@ -15,7 +15,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -33,23 +35,55 @@ public class EgresoController {
     //crear egreso
     @PostMapping("egreso")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> create(@RequestBody EgresoDto egresoDto){
+    public ResponseEntity<?> create(
+            @RequestParam(value = "soporte", required = false) MultipartFile soporte,
+            @RequestParam("descripcion") String descripcion,
+            @RequestParam("fecha") String fecha,
+            @RequestParam("total") Double total,
+            @RequestParam("categoria") String categoria,
+            @RequestParam("deduccionDesde") String deduccionDesde
+
+    ){
         Egreso egresoSave, egresoExists = null;
+        EgresoDto egresoDto = null;
 
         try{
+
+            if(soporte == null){
+                egresoDto = EgresoDto.builder()
+                        .id(0)
+                        .descripcion(descripcion)
+                        .fecha(null)
+                        .total(total)
+                        .categoria(categoria)
+                        .deduccionDesde(deduccionDesde)
+                        .soporte(null)
+                        .build();
+            }else{
+                egresoDto = EgresoDto.builder()
+                        .id(0)
+                        .descripcion(descripcion)
+                        .fecha(null)
+                        .total(total)
+                        .categoria(categoria)
+                        .deduccionDesde(deduccionDesde)
+                        .soporte(soporte.getBytes())
+                        .build();
+            }
+
             egresoExists = egresoService.findById(egresoDto.getId());
 
             if(egresoExists != null){
                 return new ResponseEntity<>(
                         MensajeResponse.builder()
-                                .mensaje("Ya existe un ingreso")
+                                .mensaje("Ya existe un egreso")
                                 .object(null)
                                 .build()
                         , HttpStatus.CONFLICT
                 );
             }
 
-            egresoSave = egresoService.save(egresoDto);
+            egresoSave = egresoService.save(egresoDto, soporte);
 
             return new ResponseEntity<>(
                     MensajeResponse.builder()
@@ -66,6 +100,8 @@ public class EgresoController {
                             .build()
                     , HttpStatus.INTERNAL_SERVER_ERROR
             );
+        }catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

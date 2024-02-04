@@ -47,11 +47,6 @@ public class ProductoimplService implements IProductoService {
                         )
                         .build();
             }else{
-                //optimizar imagen antes de guardarla
-                byte[] imagenBytes = img.getBytes();
-
-                byte[] imagenOptimizada = optimizarImagen(imagenBytes);
-
                 producto = Producto.builder()
                         .id(0)
                         .nombre(nombre)
