@@ -19,6 +19,7 @@ import java.util.List;
 //CONTROLLER CATEGORIAS DE PRODUCTOS
 @RestController
 @RequestMapping("/api/v1")
+@CrossOrigin(origins = {"http://localhost:4200", "https://laburgueseria-ed758.web.app"})
 public class CategoriaProductoController {
 
     @Autowired //implementacion del servicio con nuestros métodos crud

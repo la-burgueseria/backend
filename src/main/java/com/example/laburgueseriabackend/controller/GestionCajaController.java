@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1")
+@CrossOrigin(origins = {"http://localhost:4200", "https://laburgueseria-ed758.web.app"})
 public class GestionCajaController {
     @Autowired
     private IGestionCajaService gestionCajaService;
