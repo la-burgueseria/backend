@@ -34,6 +34,7 @@ com\example\laburgueseriabackend\controller\CuentaProductosController.class
 com\example\laburgueseriabackend\model\entity\Empleado.class
 com\example\laburgueseriabackend\model\entity\Ingreso.class
 com\example\laburgueseriabackend\model\entity\CuentaProductos$CuentaProductosBuilder.class
+com\example\laburgueseriabackend\config\WebConfig.class
 com\example\laburgueseriabackend\controller\EmpleadoController.class
 com\example\laburgueseriabackend\controller\CategoriaProductoController.class
 com\example\laburgueseriabackend\service\impl\EmpleadoImplService.class
