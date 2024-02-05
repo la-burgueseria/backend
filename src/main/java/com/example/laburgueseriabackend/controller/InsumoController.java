@@ -18,6 +18,7 @@ import java.util.List;
 
 @RestController //especificar que esta clase es un controller
 @RequestMapping("/api/v1") //asignacion de la ruta para ser consumido
+@CrossOrigin(origins = {"http://localhost:4200", "https://laburgueseria-ed758.web.app"})
 public class InsumoController {
 
     @Autowired //inyeccion de dependencias del servicio
