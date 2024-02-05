@@ -1,14 +1,8 @@
-# Usa una imagen base con Java 17 y Alpine Linux
-FROM adoptopenjdk:17-jdk-hotspot-alpine3.15
+FROM maven:3.8.5-openjdk-17 AS build
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Establece el directorio de trabajo en /app
-WORKDIR /app
-
-# Copia el JAR construido en el contenedor
-COPY target/*.jar app.jar
-
-# Expone el puerto 8080
+FROM openjdk:17.0.1-jdk-slim
+COPY --from=build /target/laburgueseria-backend-0.0.1-SNAPSHOT.jar demo.jar
 EXPOSE 8080
-
-# Comando para ejecutar la aplicación al iniciar el contenedor
-CMD ["java", "-jar", "app.jar"]
+ENTRYPOINT["java","-jar","demo.jar"]
