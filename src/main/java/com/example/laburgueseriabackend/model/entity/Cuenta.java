@@ -63,6 +63,6 @@ public class Cuenta implements Serializable {
 
     @PrePersist
     protected void onCreate() {
-        fecha = LocalDateTime.now(ZoneOffset.UTC);
+        fecha = LocalDateTime.now();
     }
 }
