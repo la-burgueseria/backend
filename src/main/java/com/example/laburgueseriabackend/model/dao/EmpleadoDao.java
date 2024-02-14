@@ -12,7 +12,7 @@ public interface EmpleadoDao  extends JpaRepository<Empleado, Integer> {
     List<Empleado> findEmpleadosByNombre(String nombre);
     //BUSCAR POR DOCUMENTO
     @Query("SELECT e FROM Empleado e WHERE e.documento = :documento")
-    Empleado findEmpleadosByDocumento(Long documento);
+    Empleado findEmpleadosByDocumento(String documento);
 
     //Cambiar estado activo o inactivo de un empleado
     @Query("UPDATE Empleado e SET e.estado = :estado WHERE e.id = :id")

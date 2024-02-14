@@ -21,7 +21,7 @@ public class Empleado implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY) //se especifica que el ID es autoincrement
     private Integer id;
     @Column(name = "documento")
-    private Long documento;
+    private String documento;
     @Column(name = "nombre")
     private String nombre;
     @Column(name = "apellido")

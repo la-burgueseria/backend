@@ -15,7 +15,7 @@ public interface IEmpleadoService {
     Boolean existsById(Integer id);
     List<Empleado> listAll();
     List<Empleado> findEmpleadosByNombre(String nombre);
-    Empleado findEmpleadoByDocumento(Long documento);
+    Empleado findEmpleadoByDocumento(String documento);
     Page<Empleado> empleadosPaginados(Pageable pageable);
     Empleado actualizarEstado(Boolean estado, Integer id);
 }

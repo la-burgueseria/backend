@@ -2,9 +2,7 @@ package com.example.laburgueseriabackend.model.dto;
 
 import com.example.laburgueseriabackend.model.entity.Producto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +10,8 @@ import java.util.List;
 @Data
 @ToString
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CategoriaProductoDto {
     private Integer id;
     private String nombre;

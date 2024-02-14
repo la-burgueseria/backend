@@ -175,7 +175,7 @@ public class EmpleadoController {
     //BUSCAR EMPLEADO POR DOCUMENTO
     @GetMapping("empleado/documento/{documento}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> buscarDocumento(@PathVariable Long documento){
+    public ResponseEntity<?> buscarDocumento(@PathVariable String documento){
         try{
             Empleado empleado = empleadoService.findEmpleadoByDocumento(documento);
 

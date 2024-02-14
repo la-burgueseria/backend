@@ -60,7 +60,7 @@ public class EmpleadoImplService implements IEmpleadoService {
     }
 
     @Override
-    public Empleado findEmpleadoByDocumento(Long documento) {
+    public Empleado findEmpleadoByDocumento(String documento) {
         return this.empleadoDao.findEmpleadosByDocumento(documento);
     }
 

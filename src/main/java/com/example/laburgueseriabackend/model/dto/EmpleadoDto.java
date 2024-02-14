@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class EmpleadoDto {
     private Integer id;
-    private Long documento;
+    private String documento;
     private String nombre;
     private String apellido;
     private Boolean estado;
