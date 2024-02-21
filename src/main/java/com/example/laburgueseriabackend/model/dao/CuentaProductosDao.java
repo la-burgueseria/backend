@@ -2,6 +2,7 @@ package com.example.laburgueseriabackend.model.dao;
 
 import com.example.laburgueseriabackend.model.entity.CuentaProductos;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -11,4 +12,8 @@ public interface CuentaProductosDao extends JpaRepository<CuentaProductos, Integ
     //obtener todos los produtos vinculados a una cuenta X
     @Query("SELECT cp FROM CuentaProductos cp WHERE cp.cuenta.id = :cuentaId")
     List<CuentaProductos> getCuentaProductosByCuenta(Integer cuentaId);
+
+    @Modifying
+    @Query("DELETE FROM CuentaProductos cp WHERE cp.id = :id")
+    void deleteCuentaProducto(Integer id);
 }

@@ -12,4 +12,5 @@ public interface ICuentaProductosService {
     List<CuentaProductos> listAll();
     Boolean existsById(Integer id);
     List<CuentaProductos> getCuentaProductosByCuenta(Integer cuentaId);
+    void deleteCuentaProducto(Integer id);
 }

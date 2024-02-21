@@ -8,6 +8,7 @@ import com.example.laburgueseriabackend.service.ICuentaProductosService;
 import com.example.laburgueseriabackend.service.IProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -54,5 +55,11 @@ public class CuentaProductosImplService implements ICuentaProductosService {
     @Override
     public List<CuentaProductos> getCuentaProductosByCuenta(Integer cuentaId) {
         return (List<CuentaProductos>) cuentaProductosDao.getCuentaProductosByCuenta(cuentaId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCuentaProducto(Integer id) {
+        cuentaProductosDao.deleteCuentaProducto(id);
     }
 }

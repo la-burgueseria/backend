@@ -36,9 +36,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authRequest ->
                         authRequest
-                                .requestMatchers(HttpMethod.GET).permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS).permitAll()
                                 .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers(HttpMethod.DELETE, "/api/v1/cuenta-productos/**").authenticated() // Agrega esta línea para habilitar DELETE en la ruta especificada
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManager ->

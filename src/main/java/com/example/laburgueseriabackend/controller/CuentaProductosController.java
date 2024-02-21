@@ -152,18 +152,19 @@ public class CuentaProductosController {
 
     //ELIMINAR REGISTRO
     @DeleteMapping("cuenta-productos/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> delete(@PathVariable Integer id){
         try{
             CuentaProductos cuentaProductos = cuentaProductosService.findById(id);
-            cuentaProductosService.delete(cuentaProductos);
+
+            cuentaProductosService.deleteCuentaProducto(cuentaProductos.getId());
 
             return new ResponseEntity<>(
                     MensajeResponse.builder()
                             .mensaje("Producto eliminado correctamente")
                             .object(cuentaProductos)
                             .build()
-                    , HttpStatus.NO_CONTENT
+                    , HttpStatus.OK
             );
         }catch (DataAccessException exDt){
             return new ResponseEntity<>(MensajeResponse
