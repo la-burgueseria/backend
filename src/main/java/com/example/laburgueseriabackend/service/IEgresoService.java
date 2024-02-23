@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface IEgresoService {
 
-    Egreso save(EgresoDto egresoDto, MultipartFile soporte);
+    Egreso save(EgresoDto egresoDto, byte[] soporte);
 
     Egreso findById(Integer id);
     void delete(Egreso egreso);

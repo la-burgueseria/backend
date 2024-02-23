@@ -20,33 +20,29 @@ public class EgresoImplService implements IEgresoService {
     private EgresoDao egresoDao;
 
     @Override
-    public Egreso save(EgresoDto egresoDto, MultipartFile soporte) {
+    public Egreso save(EgresoDto egresoDto, byte[] soporte) {
         Egreso egreso = null;
 
-        try{
-            if(soporte == null){
-                egreso = Egreso.builder()
-                        .id(egresoDto.getId())
-                        .fecha(egresoDto.getFecha())
-                        .descripcion(egresoDto.getDescripcion())
-                        .categoria(egresoDto.getCategoria())
-                        .total(egresoDto.getTotal())
-                        .deduccionDesde(egresoDto.getDeduccionDesde())
-                        .soporte(null)
-                        .build();
-            }else{
-                egreso = Egreso.builder()
-                        .id(egresoDto.getId())
-                        .fecha(egresoDto.getFecha())
-                        .descripcion(egresoDto.getDescripcion())
-                        .categoria(egresoDto.getCategoria())
-                        .total(egresoDto.getTotal())
-                        .deduccionDesde(egresoDto.getDeduccionDesde())
-                        .soporte(soporte.getBytes())
-                        .build();
-            }
-        }catch (IOException e) {
-            throw new RuntimeException(e);
+        if(soporte == null){
+            egreso = Egreso.builder()
+                    .id(egresoDto.getId())
+                    .fecha(egresoDto.getFecha())
+                    .descripcion(egresoDto.getDescripcion())
+                    .categoria(egresoDto.getCategoria())
+                    .total(egresoDto.getTotal())
+                    .deduccionDesde(egresoDto.getDeduccionDesde())
+                    .soporte(null)
+                    .build();
+        }else{
+            egreso = Egreso.builder()
+                    .id(egresoDto.getId())
+                    .fecha(egresoDto.getFecha())
+                    .descripcion(egresoDto.getDescripcion())
+                    .categoria(egresoDto.getCategoria())
+                    .total(egresoDto.getTotal())
+                    .deduccionDesde(egresoDto.getDeduccionDesde())
+                    .soporte(soporte)
+                    .build();
         }
 
         return egresoDao.save(egreso);

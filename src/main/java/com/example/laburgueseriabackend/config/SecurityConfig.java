@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authRequest ->
                         authRequest
                                 .requestMatchers(HttpMethod.OPTIONS).permitAll()
+                                .requestMatchers(HttpMethod.GET,"/api/v1/productos/**").permitAll()
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.DELETE, "/api/v1/cuenta-productos/**").authenticated() // Agrega esta línea para habilitar DELETE en la ruta especificada
                                 .anyRequest().authenticated()

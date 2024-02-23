@@ -6,6 +6,7 @@ import com.example.laburgueseriabackend.model.entity.CategoriaProducto;
 import com.example.laburgueseriabackend.model.entity.Producto;
 import com.example.laburgueseriabackend.model.payload.MensajeResponse;
 import com.example.laburgueseriabackend.service.IProductoService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,28 +35,41 @@ public class ProductoController {
     @PostMapping("producto")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> create(
-            @RequestParam(value = "imagen", required = false)MultipartFile img,
-            @RequestParam("nombre") String nombre,
-            @RequestParam("precio") Double precio,
-            @RequestParam("desc") String descripcion,
-            @RequestParam(value = "categoria") Integer categoriaId
-            ){
+            @RequestBody byte[] imagen,
+                                    @RequestParam("nombre") String nombre,
+                                    @RequestParam("precio") Double precio,
+                                    @RequestParam("descripcion") String descripcion,
+                                    @RequestParam("categoria") Integer categoria)
+                                    {
 
 
         Producto productoSave, productoExists = null;
         ProductoDto productoDto = null;
 
         try{
-            if(img == null){
+           ProductoDto producto = ProductoDto.builder()
+                   .id(0)
+                   .nombre(nombre)
+                   .precio(precio)
+                   .descripcion(descripcion)
+                   .imagen(null)
+                   .categoriaProductoDto(
+                           CategoriaProductoDto.builder()
+                                   .id(categoria)
+                                   .build()
+                   ).build();
+
+
+            if(imagen == null){
                 productoDto = ProductoDto.builder()
                         .id(0)
-                        .nombre(nombre)
-                        .precio(precio)
-                        .descripcion(descripcion)
+                        .nombre(producto.getNombre())
+                        .precio(producto.getPrecio())
+                        .descripcion(producto.getDescripcion())
                         .imagen(null)
                         .categoriaProductoDto(
                                 CategoriaProductoDto.builder()
-                                        .id(categoriaId)
+                                        .id(producto.getCategoriaProductoDto().getId())
                                         .nombre("")
                                         .build()
                         )
@@ -63,13 +77,13 @@ public class ProductoController {
             }else {
                 productoDto = ProductoDto.builder()
                         .id(0)
-                        .nombre(nombre)
-                        .precio(precio)
-                        .descripcion(descripcion)
-                        .imagen(img.getBytes())
+                        .nombre(producto.getNombre())
+                        .precio(producto.getPrecio())
+                        .descripcion(producto.getDescripcion())
+                        .imagen(imagen)
                         .categoriaProductoDto(
                                 CategoriaProductoDto.builder()
-                                        .id(categoriaId)
+                                        .id(producto.getCategoriaProductoDto().getId())
                                         .nombre("")
                                         .build()
                         )
@@ -87,7 +101,7 @@ public class ProductoController {
                 );
             }
 
-            productoSave = productoService.save(nombre, precio, descripcion, img, categoriaId);
+            productoSave = productoService.save(productoDto);
 
             return new ResponseEntity<>(
                     MensajeResponse.builder()
@@ -113,8 +127,6 @@ public class ProductoController {
                             .build()
                     , HttpStatus.INTERNAL_SERVER_ERROR
             );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 

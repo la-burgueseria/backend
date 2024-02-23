@@ -14,13 +14,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<String>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<?> handlerRuntimeException(RuntimeException runtimeException){
-        return new ResponseEntity<>(MensajeResponse.builder()
-                .mensaje("Bad Gateway")
-                .object(null)
-                .build()
-        , HttpStatus.BAD_GATEWAY);
-    }
+
 
 }

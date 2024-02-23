@@ -29,19 +29,19 @@ public class ProductoimplService implements IProductoService {
     //GUARADR
     @Transactional
     @Override
-    public Producto save(String nombre, Double precio, String descripcion, MultipartFile img, Integer categoriaId) {
+    public Producto save(ProductoDto productoDto) {
         Producto producto = null;
         try {
-            if(img == null){
+            if(productoDto.getImagen() == null){
                 producto = Producto.builder()
                         .id(0)
-                        .nombre(nombre)
-                        .precio(precio)
+                        .nombre(productoDto.getNombre())
+                        .precio(productoDto.getPrecio())
                         .imagen(null)
-                        .descripcion(descripcion)
+                        .descripcion(productoDto.getDescripcion())
                         .categoriaProducto(
                                 CategoriaProducto.builder()
-                                        .id(categoriaId)
+                                        .id(productoDto.getCategoriaProductoDto().getId())
                                         .nombre("")
                                         .build()
                         )
@@ -49,13 +49,13 @@ public class ProductoimplService implements IProductoService {
             }else{
                 producto = Producto.builder()
                         .id(0)
-                        .nombre(nombre)
-                        .precio(precio)
-                        .imagen(img.getBytes())
-                        .descripcion(descripcion)
+                        .nombre(productoDto.getNombre())
+                        .precio(productoDto.getPrecio())
+                        .imagen(productoDto.getImagen())
+                        .descripcion(productoDto.getDescripcion())
                         .categoriaProducto(
                                 CategoriaProducto.builder()
-                                        .id(categoriaId)
+                                        .id(productoDto.getCategoriaProductoDto().getId())
                                         .nombre("")
                                         .build()
                         )
@@ -63,10 +63,9 @@ public class ProductoimplService implements IProductoService {
             }
 
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
         return productoDao.save(producto);
     }
     @Transactional

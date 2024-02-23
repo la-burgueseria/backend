@@ -37,7 +37,7 @@ public class EgresoController {
     @PostMapping("egreso")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> create(
-            @RequestParam(value = "soporte", required = false) MultipartFile soporte,
+            @RequestBody byte[] soporte,
             @RequestParam("descripcion") String descripcion,
             @RequestParam("fecha") String fecha,
             @RequestParam("total") Double total,
@@ -68,7 +68,7 @@ public class EgresoController {
                         .total(total)
                         .categoria(categoria)
                         .deduccionDesde(deduccionDesde)
-                        .soporte(soporte.getBytes())
+                        .soporte(soporte)
                         .build();
             }
 
@@ -101,8 +101,6 @@ public class EgresoController {
                             .build()
                     , HttpStatus.INTERNAL_SERVER_ERROR
             );
-        }catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 

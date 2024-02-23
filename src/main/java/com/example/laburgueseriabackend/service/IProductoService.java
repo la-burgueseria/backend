@@ -14,7 +14,7 @@ public interface IProductoService {
 
     //GUARADR
     @Transactional
-    Producto save(String nombre, Double precio, String descripcion, MultipartFile img, Integer categoriaId);
+    Producto save(ProductoDto productoDto);
     @Transactional
     Producto save2(String nombre, Double precio, String descripcion, MultipartFile img, Integer categoriaId, Integer id);
     Producto findById(Integer id);
