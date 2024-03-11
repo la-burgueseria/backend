@@ -24,6 +24,7 @@ public class CuentaProductosImplService implements ICuentaProductosService {
         CuentaProductos cuentaProductos = CuentaProductos.builder()
                 .id(cuentaProductosDto.getId())
                 .cantidad(cuentaProductosDto.getCantidad())
+                .valorProducto(cuentaProductosDto.getValorProducto())
                 .estado(cuentaProductosDto.getEstado())
                 .cuenta(cuentaProductosDto.getCuenta())
                 .producto(cuentaProductosDto.getProducto())

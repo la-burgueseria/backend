@@ -15,6 +15,7 @@ public class CuentaProductosDto {
     private Cuenta cuenta;
     private Producto producto;
     private Integer cantidad;
+    private Integer valorProducto;
     private String estado;
 
 }

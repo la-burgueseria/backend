@@ -203,42 +203,41 @@ public class ProductoController {
     }
 
     //Actualizar producto
-    @PutMapping("producto/{id}")
+    @PutMapping("producto")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> update(@RequestParam(value = "imagen", required = false)MultipartFile img,
-                                    @RequestParam("nombre") String nombre,
-                                    @RequestParam("precio") Double precio,
-                                    @RequestParam("desc") String descripcion,
-                                    @RequestParam("categoria") Integer categoriaId,
-                                    @RequestParam("id") Integer idProducto,
-                                    @PathVariable Integer id) throws IOException {
+    public ResponseEntity<?> update(
+            @RequestBody byte[] imagen,
+            @RequestParam("nombre") String nombre,
+            @RequestParam("precio") Double precio,
+            @RequestParam("descripcion") String descripcion,
+            @RequestParam("categoria") Integer categoria,
+            @RequestParam("id") Integer idProducto
+    )
+{
 
         ProductoDto productoDto = null;
-        System.out.println(id);
-        if(img != null){
-            productoDto = ProductoDto.builder()
-                    .id(idProducto)
-                    .nombre(nombre)
-                    .precio(precio)
-                    .descripcion(descripcion)
-                    .imagen(img.getBytes())
-                    .build();
-        }
-        else{
-            productoDto = ProductoDto.builder()
-                    .id(idProducto)
-                    .nombre(nombre)
-                    .precio(precio)
-                    .descripcion(descripcion)
-                    .imagen(null)
-                    .build();
-        }
+
+
+
+        productoDto = ProductoDto.builder()
+                .id(idProducto)
+                .nombre(nombre)
+                .precio(precio)
+                .descripcion(descripcion)
+                .imagen(imagen)
+                .categoriaProductoDto(
+                        CategoriaProductoDto.builder()
+                                .id(categoria)
+                                .nombre("")
+                                .build()
+                )
+                .build();
 
         Producto productoUpdate = null;
         try{
-            if(productoService.existsById(id)){
-                productoDto.setId(id);
-                productoUpdate = productoService.save2(nombre, precio, descripcion, img, categoriaId, id);
+            if(productoService.existsById(idProducto)){
+
+                productoUpdate = productoService.save(productoDto);
 
                 return new ResponseEntity<>(MensajeResponse.builder()
                         .mensaje("Actualizado correctamente")
@@ -258,13 +257,15 @@ public class ProductoController {
                         .build()
                         , HttpStatus.CREATED
                 );
+            }else{
+                return new ResponseEntity<>(MensajeResponse.builder()
+                        .mensaje("Registro no encontrado en la base de datos")
+                        .object(null)
+                        .build()
+                        , HttpStatus.NOT_FOUND
+                );
             }
-            return new ResponseEntity<>(MensajeResponse.builder()
-                    .mensaje("Registro no encontrado en la base de datos")
-                    .object(null)
-                    .build()
-                    , HttpStatus.NOT_FOUND
-            );
+
         }catch (DataAccessException exDt){
             return new ResponseEntity<>(MensajeResponse.builder()
                     .mensaje(exDt.getMessage())

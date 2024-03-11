@@ -25,6 +25,8 @@ public class CuentaProductos implements Serializable {
     private Producto producto;
     @Column(name = "cantidad")
     private Integer cantidad;
+    @Column(name="valor_producto")
+    private Integer valorProducto;
     @Column(name = "estado")
     private String estado;
 }

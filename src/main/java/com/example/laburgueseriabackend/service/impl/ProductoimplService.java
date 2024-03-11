@@ -62,10 +62,13 @@ public class ProductoimplService implements IProductoService {
                         .build();
             }
 
-
+            if(productoDto.getId() != 0 || productoDto.getId() != null){
+                producto.setId(productoDto.getId());
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
         return productoDao.save(producto);
     }
     @Transactional
