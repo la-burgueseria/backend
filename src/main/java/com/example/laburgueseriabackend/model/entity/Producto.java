@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.Serializable;
 import java.util.List;
@@ -31,6 +32,8 @@ public class Producto implements Serializable {
     private byte[] imagen;
     @Column(name = "descripcion")
     private String descripcion;
+    @Column(name = "is_publicado")
+    private Boolean isPublicado;
     @ManyToOne
     @JoinColumn(name = "categoria_producto_id")
     private CategoriaProducto categoriaProducto;

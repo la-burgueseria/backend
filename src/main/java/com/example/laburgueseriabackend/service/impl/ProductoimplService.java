@@ -159,6 +159,11 @@ public class ProductoimplService implements IProductoService {
         return (List<Producto>) productoDao.findProductoByNombre(nombre);
     }
 
+    @Override
+    public Producto changeIsPublicado(Integer id, Boolean estado) {
+        return productoDao.changeIsPublicado(id, estado);
+    }
+
     private byte[] optimizarImagen(byte[] imagenOriginal){
             try{
                 InputStream inputStream = new ByteArrayInputStream(imagenOriginal);

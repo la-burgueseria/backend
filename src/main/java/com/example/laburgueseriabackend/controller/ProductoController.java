@@ -201,7 +201,31 @@ public class ProductoController {
                 , HttpStatus.OK
         );
     }
+    //Cambiar estado isPublicado
+    @PutMapping("producto/{id}/{estado}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> changeIsPublicado(@PathVariable Integer id, @PathVariable Boolean estado){
+        Producto productoUpdate = null;
 
+        try{
+            productoUpdate =  this.productoService.changeIsPublicado(id, estado);
+
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje("Actualizado con exito")
+                            .object(productoUpdate)
+                            .build()
+                    , HttpStatus.OK
+            );
+        }catch (DataAccessException exDt){
+            return new ResponseEntity<>(MensajeResponse.builder()
+                    .mensaje(exDt.getMessage())
+                    .object(null)
+                    .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
     //Actualizar producto
     @PutMapping("producto")
     @ResponseStatus(HttpStatus.CREATED)

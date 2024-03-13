@@ -26,5 +26,6 @@ public interface IProductoService {
     Boolean existsById(Integer id);
     Page<Producto> productosPaginados(Pageable pageable);
     List<Producto> findProductoByNombre(String nombre);
+    Producto changeIsPublicado(Integer id, Boolean estado);
 
 }

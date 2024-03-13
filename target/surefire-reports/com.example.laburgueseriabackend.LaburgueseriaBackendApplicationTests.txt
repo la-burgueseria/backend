@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.example.laburgueseriabackend.LaburgueseriaBackendApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.769 s - in com.example.laburgueseriabackend.LaburgueseriaBackendApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.187 s - in com.example.laburgueseriabackend.LaburgueseriaBackendApplicationTests

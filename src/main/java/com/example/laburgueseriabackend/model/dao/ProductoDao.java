@@ -13,4 +13,7 @@ public interface ProductoDao extends JpaRepository<Producto, Integer> {
     //buscar insumos que coincidan con el parámetro de busqueda
     @Query("SELECT p FROM Producto  p WHERE p.nombre LIKE %:nombre%")
     List<Producto> findProductoByNombre(String nombre);
+    //Cambiar el estado de isPublicado
+    @Query("UPDATE Producto p SET p.isPublicado = :estado WHERE p.id = :id")
+    Producto changeIsPublicado(Integer id, Boolean estado);
 }
