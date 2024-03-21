@@ -98,9 +98,9 @@ public class GestionCajaController {
                 return new ResponseEntity<>(
                         MensajeResponse.builder()
                                 .mensaje("No hay registros en el sistema")
-                                .object(null)
+                                .object(gestionCajas)
                                 .build()
-                        , HttpStatus.NOT_FOUND
+                        , HttpStatus.OK
                 );
             }
 
