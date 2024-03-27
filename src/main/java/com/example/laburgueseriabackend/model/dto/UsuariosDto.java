@@ -16,4 +16,6 @@ public class UsuariosDto {
     private String password;
     private String rol;
     private Boolean estado;
+    private String correo;
+    private String token;
 }

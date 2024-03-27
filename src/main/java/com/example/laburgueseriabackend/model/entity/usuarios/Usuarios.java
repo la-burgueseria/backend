@@ -34,7 +34,10 @@ public class Usuarios implements Serializable, UserDetails {
     private String rol;
     @Column(name = "estado", nullable = false)
     private Boolean estado;
-
+    @Column(name = "correo", nullable = false, unique = true)
+    private String correo;
+    @Column(name = "token", nullable = true)
+    private String token;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -49,7 +49,6 @@ public class AuthController {
     public ResponseEntity<?> update(@RequestBody UsuariosDto request){
         Usuarios usuario = null;
         Empleado empleado = null;
-
         usuario = authService.getUsuarioByDocumento(request.getUsername());
         empleado = empleadoService.findEmpleadoByDocumento(request.getUsername());
         EmpleadoDto empleadoDto = null;
@@ -70,21 +69,55 @@ public class AuthController {
                         .apellido(request.getApellido())
                         .username(request.getUsername())
                         .password(usuario.getPassword())
+                        .correo(request.getCorreo())
                         .estado(true)
                         .rol(request.getRol())
                         .build();
-            }else{
+            }
+            else{
                 usuariosDto = UsuariosDto.builder()
                         .id(usuario.getId())
                         .nombre(request.getNombre())
                         .apellido(request.getApellido())
                         .username(request.getUsername())
                         .password(passwordEncoder.encode(request.getPassword()))
+                        .correo(request.getCorreo())
                         .estado(true)
                         .rol(request.getRol())
                         .build();
             }
             try{
+                //validar si el correo electronico cambió
+                 if(!usuariosDto.getCorreo().equals(usuario.getCorreo())) {
+                     //si el correo es distinto, validar si ya existe un usuario con ese correo vinculado
+                     Usuarios correoExists = null;
+                     correoExists = authService.findUsuariosByCorreo(usuariosDto.getCorreo());
+                     //en caso de que si exista un usuario con el correo vinculado
+                     //retorna mensaje de error
+                     if (correoExists != null) {
+                         return new ResponseEntity<>(
+                                 MensajeResponse.builder()
+                                         .mensaje("Este correo electronico ya está en uso.")
+                                         .object(null)
+                                         .build()
+                                 , HttpStatus.NOT_ACCEPTABLE
+                         );
+                     }
+                     //si el correo no está vinculado a ningun usuario lo actualiza sin problema
+                     else {
+                         Empleado empleadoSave = empleadoService.save(empleadoDto);
+                         authService.updateUsuario(usuariosDto);
+
+                         return new ResponseEntity<>(
+                                 MensajeResponse.builder()
+                                         .mensaje("Usuario actualizado exitosamente")
+                                         .object(null)
+                                         .build()
+                                 , HttpStatus.OK
+                         );
+                     }
+                 }
+                //en caso de que el correo no vaya a recibir modificaciones, se procede sin problema
                 Empleado empleadoSave = empleadoService.save(empleadoDto);
                 authService.updateUsuario(usuariosDto);
 
@@ -94,7 +127,7 @@ public class AuthController {
                                 .object(null)
                                 .build()
                         , HttpStatus.OK
-                        );
+                );
             }catch (DataAccessException exDt){
                 return new ResponseEntity<>(
                         MensajeResponse.builder()
@@ -118,10 +151,11 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody UsuariosDto request){
         Usuarios usuario = null;
         Empleado empleado = null;
+        Usuarios correoExists = null;
 
         usuario = authService.getUsuarioByDocumento(request.getUsername());
         empleado = empleadoService.findEmpleadoByDocumento(request.getUsername());
-
+        correoExists = authService.findUsuariosByCorreo(request.getCorreo());
         if(usuario != null || empleado != null){
             return new ResponseEntity<>(
                     MensajeResponse.builder()
@@ -130,7 +164,17 @@ public class AuthController {
                             .build()
                     , HttpStatus.CONFLICT
             );
-        }else{
+        }
+        else if(correoExists != null){ //validar que el correo no este en uso
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje("Este correo electronico ya se encuentra en uso")
+                            .object(usuario)
+                            .build()
+                    , HttpStatus.NOT_ACCEPTABLE
+            );
+        }
+        else{
             EmpleadoDto empleadoDto = EmpleadoDto.builder()
                     .id(0)
                     .nombre(request.getNombre())
@@ -146,6 +190,7 @@ public class AuthController {
                     .password(request.getPassword())
                     .estado(true)
                     .rol(request.getRol())
+                    .correo(request.getCorreo())
                     .build();
             Empleado empleadoSave = empleadoService.save(empleadoDto);
 
@@ -153,4 +198,46 @@ public class AuthController {
         }
 
     }
+    //controller para asignar token
+    @PutMapping("users/token/{correo}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> setToken(@PathVariable String correo){
+        //validar que el correo exista
+        try{
+            Usuarios correoExists = null;
+            correoExists = this.authService.findUsuariosByCorreo(correo);
+            if(correoExists == null){
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("")
+                                .object(null)
+                                .build()
+                        , HttpStatus.NOT_FOUND
+                );
+            }
+            //generar el token
+            TokenGenerator tokenGenerator = new TokenGenerator();
+            String token = tokenGenerator.generateToken();
+            System.out.println(token);
+            //asignar el token al usuario
+            this.authService.updateToken(token, correoExists.getId());//guardarlo en la bd
+            //retornar el token
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje(token)
+                            .object(null)
+                            .build()
+                    , HttpStatus.OK
+            );
+        }catch (DataAccessException exDt){
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje(exDt.getMessage())
+                            .object(null)
+                            .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }
+

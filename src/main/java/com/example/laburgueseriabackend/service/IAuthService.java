@@ -13,4 +13,6 @@ public interface IAuthService {
     Usuarios getUsuarioByDocumento(String documento);
     List<Usuarios> listAll();
     void updateUsuario(UsuariosDto usuario);
+    Usuarios findUsuariosByCorreo(String correo);
+    void updateToken(String token, Integer id);
 }

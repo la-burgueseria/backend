@@ -60,6 +60,7 @@ public class AuthImplService implements IAuthService {
                 .apellido(request.getApellido())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .rol(request.getRol())
+                .correo(request.getCorreo())
                 .estado(true)
                 .build();
 
@@ -90,8 +91,20 @@ public class AuthImplService implements IAuthService {
                 .username(usuarioDto.getUsername())
                 .password(usuarioDto.getPassword())
                 .rol(usuarioDto.getRol())
+                .correo(usuarioDto.getCorreo())
                 .build();
 
-        usuariosDao.updateUsuario(usuario.getUsername(), usuario.getId() ,usuario.getNombre(), usuario.getApellido(), usuario.getPassword(), usuario.getRol());
+        usuariosDao.updateUsuario(usuario.getUsername(), usuario.getId() ,usuario.getNombre(), usuario.getApellido(), usuario.getPassword(), usuario.getRol(), usuario.getCorreo());
+    }
+
+    @Override
+    public Usuarios findUsuariosByCorreo(String correo) {
+        Usuarios usuarios = usuariosDao.findUsuariosByCorreo(correo);
+        return usuarios;
+    }
+
+    @Override
+    public void updateToken(String token, Integer id) {
+        usuariosDao.updateToken(token, id);
     }
 }
