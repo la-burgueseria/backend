@@ -218,7 +218,6 @@ public class AuthController {
             //generar el token
             TokenGenerator tokenGenerator = new TokenGenerator();
             String token = tokenGenerator.generateToken();
-            System.out.println(token);
             //asignar el token al usuario
             this.authService.updateToken(token, correoExists.getId());//guardarlo en la bd
             //retornar el token
@@ -228,6 +227,94 @@ public class AuthController {
                             .object(null)
                             .build()
                     , HttpStatus.OK
+            );
+        }catch (DataAccessException exDt){
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje(exDt.getMessage())
+                            .object(null)
+                            .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+    //obtener usuario con el correo
+    @GetMapping("users/correo/{correo}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> getUsuarioByCorreo(@PathVariable String correo){
+        try{
+            UsuariosDto usuariosDto = null;
+            Usuarios usuario = null;
+
+            usuario = this.authService.findUsuariosByCorreo(correo);
+
+            if(usuario != null){
+
+                //generar el token
+                TokenGenerator tokenGenerator = new TokenGenerator();
+                String token = tokenGenerator.generateToken();
+                //asignar el token al usuario
+                this.authService.updateToken(token, usuario.getId());//guardarlo en la bd
+
+                usuariosDto = UsuariosDto.builder()
+                        .id(usuario.getId())
+                        .nombre(usuario.getNombre())
+                        .apellido(usuario.getApellido())
+                        .correo(usuario.getCorreo())
+                        .username(usuario.getUsername())
+                        .password("null")
+                        .rol(usuario.getRol())
+                        .estado(usuario.getEstado())
+                        .token(token)
+                        .build();
+            }
+
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje("OK")
+                            .object(usuariosDto)
+                            .build()
+                    , HttpStatus.OK
+            );
+        }catch (DataAccessException exDt){
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje(exDt.getMessage())
+                            .object(null)
+                            .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    //recibir token y correo electronico
+    @GetMapping("users/correo/{correo}/{token}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> validateTokenByMail(@PathVariable String correo, @PathVariable String token){
+        try{
+            UsuariosDto usuariosDto = null;
+            Usuarios usuario = null;
+            System.out.println(token);
+            usuario = this.authService.findUsuariosByCorreo(correo);
+
+            if(usuario != null){
+                System.out.println(usuario.getToken());
+                if(usuario.getToken().equals(token)){
+                    return new ResponseEntity<>(
+                            MensajeResponse.builder()
+                                    .mensaje("OK")
+                                    .object(null)
+                                    .build()
+                            , HttpStatus.OK
+                    );
+                }
+            }
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje("Conflicto")
+                            .object(null)
+                            .build()
+                    , HttpStatus.CONFLICT
             );
         }catch (DataAccessException exDt){
             return new ResponseEntity<>(
