@@ -107,4 +107,9 @@ public class AuthImplService implements IAuthService {
     public void updateToken(String token, Integer id) {
         usuariosDao.updateToken(token, id);
     }
+
+    @Override
+    public void updateEstado(Integer id, Boolean estado) {
+        this.usuariosDao.updateEstado(id, estado);
+    }
 }

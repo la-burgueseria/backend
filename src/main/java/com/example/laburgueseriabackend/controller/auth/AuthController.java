@@ -30,8 +30,20 @@ public class AuthController {
 
 
     @PostMapping("login")
-    public ResponseEntity<AuthResponse> login(@RequestBody UsuariosDto request){
-        return ResponseEntity.ok(authService.login(request));
+    public ResponseEntity<?> login(@RequestBody UsuariosDto request){
+        Usuarios usuario = this.authService.getUsuarioByDocumento(request.getUsername());
+        if(usuario.getEstado()){
+            return ResponseEntity.ok(authService.login(request));
+        }else{
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje("Usuario inactivo")
+                            .object(null)
+                            .build()
+                    , HttpStatus.CONFLICT
+            );
+        }
+
     }
     @GetMapping("users")
     public ResponseEntity<?> listAll(){
@@ -315,6 +327,44 @@ public class AuthController {
                             .object(null)
                             .build()
                     , HttpStatus.CONFLICT
+            );
+        }catch (DataAccessException exDt){
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje(exDt.getMessage())
+                            .object(null)
+                            .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    //activar / desactivar usuario
+    @PatchMapping("users/status")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> updateUserStatus(@RequestBody UsuariosDto usuariosDto){
+        Usuarios usuario = null;
+        try{
+            usuario = this.authService.findUsuariosByCorreo(usuariosDto.getCorreo());
+            if(usuario != null){
+                usuario.setEstado(usuariosDto.getEstado());
+                this.authService.updateEstado(usuario.getId(), usuario.getEstado());
+
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("Estado cambiado exitosamente")
+                                .object(null)
+                                .build()
+                        , HttpStatus.OK
+                );
+            }
+
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje("No se ha encontrado el usuario con este correo electronico")
+                            .object(null)
+                            .build()
+                    , HttpStatus.NOT_FOUND
             );
         }catch (DataAccessException exDt){
             return new ResponseEntity<>(

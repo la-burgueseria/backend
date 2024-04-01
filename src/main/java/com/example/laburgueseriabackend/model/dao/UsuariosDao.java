@@ -22,6 +22,11 @@ public interface UsuariosDao extends JpaRepository<Usuarios, Integer> {
     @Modifying()
     @Query("UPDATE Usuarios u SET u.token = :token WHERE u.id = :id")
     void updateToken(String token, Integer id);
+    //cambiar el estado del usuario
+    @Transactional
+    @Modifying()
+    @Query("UPDATE Usuarios u SET u.estado = :estado WHERE u.id = :id")
+    void updateEstado(Integer id, Boolean estado);
     @Modifying()
     @Query("UPDATE Usuarios u SET u.username = :username, u.nombre = :nombre, u.apellido = :apellido, u.password = :password, u.rol = :rol, u.correo = :correo WHERE u.id = :id")
     void updateUsuario(String username, Integer id, String nombre, String apellido, String password, String rol, String correo);
