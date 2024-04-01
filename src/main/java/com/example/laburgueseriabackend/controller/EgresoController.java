@@ -37,7 +37,7 @@ public class EgresoController {
     @PostMapping("egreso")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> create(
-            @RequestBody byte[] soporte,
+            @RequestBody(required = false) byte[] soporte,
             @RequestParam("descripcion") String descripcion,
             @RequestParam("fecha") String fecha,
             @RequestParam("total") Double total,
@@ -70,18 +70,6 @@ public class EgresoController {
                         .deduccionDesde(deduccionDesde)
                         .soporte(soporte)
                         .build();
-            }
-
-            egresoExists = egresoService.findById(egresoDto.getId());
-
-            if(egresoExists != null){
-                return new ResponseEntity<>(
-                        MensajeResponse.builder()
-                                .mensaje("Ya existe un egreso")
-                                .object(null)
-                                .build()
-                        , HttpStatus.CONFLICT
-                );
             }
 
             egresoSave = egresoService.save(egresoDto, soporte);

@@ -16,7 +16,7 @@ public interface IProductoService {
     @Transactional
     Producto save(ProductoDto productoDto);
     @Transactional
-    Producto save2(String nombre, Double precio, String descripcion, MultipartFile img, Integer categoriaId, Integer id);
+    Producto save2(String nombre, Double precio, String descripcion, MultipartFile img, Integer categoriaId, Integer id, Boolean isPublicado);
     Producto findById(Integer id);
     void delete(Producto producto);
     Producto findByNombre(String nombre);
@@ -26,6 +26,6 @@ public interface IProductoService {
     Boolean existsById(Integer id);
     Page<Producto> productosPaginados(Pageable pageable);
     List<Producto> findProductoByNombre(String nombre);
-    Producto changeIsPublicado(Integer id, Boolean estado);
+    void changeIsPublicado(Integer id, Boolean estado);
 
 }

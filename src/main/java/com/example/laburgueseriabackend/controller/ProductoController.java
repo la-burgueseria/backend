@@ -35,11 +35,12 @@ public class ProductoController {
     @PostMapping("producto")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> create(
-            @RequestBody byte[] imagen,
+            @RequestBody(required = false) byte[] imagen,
                                     @RequestParam("nombre") String nombre,
                                     @RequestParam("precio") Double precio,
                                     @RequestParam("descripcion") String descripcion,
-                                    @RequestParam("categoria") Integer categoria)
+                                    @RequestParam("categoria") Integer categoria,
+            @RequestParam("isPublicado") Boolean isPublicado)
                                     {
 
 
@@ -53,6 +54,7 @@ public class ProductoController {
                    .precio(precio)
                    .descripcion(descripcion)
                    .imagen(null)
+                   .isPublicado(isPublicado)
                    .categoriaProductoDto(
                            CategoriaProductoDto.builder()
                                    .id(categoria)
@@ -67,6 +69,7 @@ public class ProductoController {
                         .precio(producto.getPrecio())
                         .descripcion(producto.getDescripcion())
                         .imagen(null)
+                        .isPublicado(isPublicado)
                         .categoriaProductoDto(
                                 CategoriaProductoDto.builder()
                                         .id(producto.getCategoriaProductoDto().getId())
@@ -81,6 +84,7 @@ public class ProductoController {
                         .precio(producto.getPrecio())
                         .descripcion(producto.getDescripcion())
                         .imagen(imagen)
+                        .isPublicado(isPublicado)
                         .categoriaProductoDto(
                                 CategoriaProductoDto.builder()
                                         .id(producto.getCategoriaProductoDto().getId())
@@ -114,6 +118,7 @@ public class ProductoController {
                                             .imagen(productoSave.getImagen())
                                             .descripcion(productoSave.getDescripcion())
                                             .categoriaProducto(productoSave.getCategoriaProducto())
+                                            .isPublicado(productoSave.getIsPublicado())
                                             .build()
                             )
                             .build()
@@ -148,6 +153,7 @@ public class ProductoController {
                                                 .precio(producto.getPrecio())
                                                 .imagen(producto.getImagen())
                                                 .descripcion(producto.getDescripcion())
+                                                .isPublicado(producto.getIsPublicado())
                                                 .categoriaProductoDto(
                                                         CategoriaProductoDto.builder()
                                                                 .id(producto.getCategoriaProducto().getId())
@@ -202,18 +208,18 @@ public class ProductoController {
         );
     }
     //Cambiar estado isPublicado
-    @PutMapping("producto/{id}/{estado}")
+    @PatchMapping("producto/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> changeIsPublicado(@PathVariable Integer id, @PathVariable Boolean estado){
+    public ResponseEntity<?> changeIsPublicado(@PathVariable Integer id, @RequestBody ProductoDto productoDto){
         Producto productoUpdate = null;
 
         try{
-            productoUpdate =  this.productoService.changeIsPublicado(id, estado);
+            this.productoService.changeIsPublicado(id, productoDto.getIsPublicado());
 
             return new ResponseEntity<>(
                     MensajeResponse.builder()
                             .mensaje("Actualizado con exito")
-                            .object(productoUpdate)
+                            .object(null)
                             .build()
                     , HttpStatus.OK
             );
@@ -235,7 +241,8 @@ public class ProductoController {
             @RequestParam("precio") Double precio,
             @RequestParam("descripcion") String descripcion,
             @RequestParam("categoria") Integer categoria,
-            @RequestParam("id") Integer idProducto
+            @RequestParam("id") Integer idProducto,
+            @RequestParam("isPublicado") Boolean isPublicado
     )
 {
 
@@ -249,6 +256,7 @@ public class ProductoController {
                 .precio(precio)
                 .descripcion(descripcion)
                 .imagen(imagen)
+                .isPublicado(isPublicado)
                 .categoriaProductoDto(
                         CategoriaProductoDto.builder()
                                 .id(categoria)
@@ -271,6 +279,7 @@ public class ProductoController {
                                 .precio(productoUpdate.getPrecio())
                                 .imagen(productoUpdate.getImagen())
                                 .descripcion(productoUpdate.getDescripcion())
+                                .isPublicado(productoUpdate.getIsPublicado())
                                 .categoriaProductoDto(
                                         CategoriaProductoDto.builder()
                                                 .id(productoUpdate.getCategoriaProducto().getId())

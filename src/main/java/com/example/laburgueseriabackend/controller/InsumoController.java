@@ -132,10 +132,21 @@ public class InsumoController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> update(@RequestBody InsumoDto insumoDto, @PathVariable Integer id){
         Insumo insumoUpdate = null;
+        Insumo insumobyNombre = null;
         try{
 
             if(insumoService.existsById(id)){
                 insumoDto.setId(id);
+                insumobyNombre = this.insumoService.findByNombre(insumoDto.getNombre());
+                if(insumobyNombre != null){
+                    return new ResponseEntity<>(
+                            MensajeResponse.builder()
+                                    .mensaje("Ya existe este insumo con este nombre")
+                                    .object(null)
+                                    .build()
+                            , HttpStatus.CONFLICT
+                    );
+                }
                 insumoUpdate = insumoService.save(insumoDto);
 
                 return new ResponseEntity<>(MensajeResponse.builder()

@@ -39,6 +39,7 @@ public class ProductoimplService implements IProductoService {
                         .precio(productoDto.getPrecio())
                         .imagen(null)
                         .descripcion(productoDto.getDescripcion())
+                        .isPublicado(productoDto.getIsPublicado())
                         .categoriaProducto(
                                 CategoriaProducto.builder()
                                         .id(productoDto.getCategoriaProductoDto().getId())
@@ -53,6 +54,7 @@ public class ProductoimplService implements IProductoService {
                         .precio(productoDto.getPrecio())
                         .imagen(productoDto.getImagen())
                         .descripcion(productoDto.getDescripcion())
+                        .isPublicado(productoDto.getIsPublicado())
                         .categoriaProducto(
                                 CategoriaProducto.builder()
                                         .id(productoDto.getCategoriaProductoDto().getId())
@@ -73,7 +75,7 @@ public class ProductoimplService implements IProductoService {
     }
     @Transactional
     @Override
-    public Producto save2(String nombre, Double precio, String descripcion, MultipartFile img, Integer categoriaId, Integer id) {
+    public Producto save2(String nombre, Double precio, String descripcion, MultipartFile img, Integer categoriaId, Integer id, Boolean isPublicado) {
         Producto producto = null;
         try {
             if(img == null){
@@ -83,6 +85,7 @@ public class ProductoimplService implements IProductoService {
                         .precio(precio)
                         .imagen(null)
                         .descripcion(descripcion)
+                        .isPublicado(isPublicado)
                         .categoriaProducto(
                                 CategoriaProducto.builder()
                                         .id(categoriaId)
@@ -102,6 +105,7 @@ public class ProductoimplService implements IProductoService {
                         .precio(precio)
                         .imagen(img.getBytes())
                         .descripcion(descripcion)
+                        .isPublicado(isPublicado)
                         .categoriaProducto(
                                 CategoriaProducto.builder()
                                         .id(categoriaId)
@@ -160,8 +164,8 @@ public class ProductoimplService implements IProductoService {
     }
 
     @Override
-    public Producto changeIsPublicado(Integer id, Boolean estado) {
-        return productoDao.changeIsPublicado(id, estado);
+    public void changeIsPublicado(Integer id, Boolean estado) {
+         productoDao.changeIsPublicado(id, estado);
     }
 
     private byte[] optimizarImagen(byte[] imagenOriginal){
