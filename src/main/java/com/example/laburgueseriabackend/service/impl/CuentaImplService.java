@@ -68,4 +68,9 @@ public class CuentaImplService implements ICuentaService {
     public List<Cuenta> getcuentasByFecha(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
         return cuentaDao.getcuentasByFecha(fechaInicio, fechaFin);
     }
+    //devuelve todas las cuentas en un rango de fechas vinculadas a un empleado dado.
+    @Override
+    public List<Cuenta> getCuentasByEmpleado(Integer empleadoId, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+        return cuentaDao.getCuentasByEmpleado(empleadoId, fechaInicio, fechaFin);
+    }
 }

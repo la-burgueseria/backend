@@ -2,8 +2,10 @@ package com.example.laburgueseriabackend.controller;
 
 import com.example.laburgueseriabackend.model.dto.CuentaDto;
 import com.example.laburgueseriabackend.model.entity.Cuenta;
+import com.example.laburgueseriabackend.model.entity.Empleado;
 import com.example.laburgueseriabackend.model.payload.MensajeResponse;
 import com.example.laburgueseriabackend.service.ICuentaService;
+import com.example.laburgueseriabackend.service.IEmpleadoService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -27,6 +29,8 @@ import java.util.List;
 public class CuentaController {
     @Autowired
     private ICuentaService cuentaService;
+    @Autowired
+    private IEmpleadoService empleadoService;
 
     //LISTAR TODAS LAS CUENTAS
     @GetMapping("cuentas")
@@ -168,6 +172,52 @@ public class CuentaController {
                             .build()
                     , HttpStatus.OK
             );
+        }catch (DataAccessException exDt){
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje(exDt.getMessage())
+                            .object(null)
+                            .build()
+                    , HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+    //filtrar cuentas por empleado y dos fechas dadas.
+    @GetMapping("cuenta/empleado/fechas")
+     public ResponseEntity<?> getCuentasEmpleadoByFechas(
+            @RequestHeader(value = "fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
+            @RequestHeader(value = "fechaFin", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin,
+            @RequestHeader(value="empleadoId") Integer empleadoId
+    )   {
+        Empleado empleado = null;
+
+
+        //se asigna la hora al inicio del dia
+        LocalDateTime fechaInicioConHora = fechaInicio.withHour(0).withMinute(0).withSecond(0).withNano(0);
+        //se asigna la hora al final del dia
+        LocalDateTime fechaFinConHora = (fechaFin != null) ? fechaFin.withHour(23).withMinute(59).withSecond(59).withNano(999999999): fechaInicioConHora.withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+        try{
+            empleado = this.empleadoService.findById(empleadoId);
+
+            if(empleado == null){
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("No se ha encontrado un empleado con este id")
+                                .object(null)
+                                .build()
+                        , HttpStatus.NOT_FOUND
+                );
+            }
+            List<Cuenta> cuentas = this.cuentaService.getCuentasByEmpleado(empleado.getId(), fechaInicioConHora, fechaFinConHora);
+
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje("OK")
+                            .object(cuentas)
+                            .build()
+                    , HttpStatus.OK
+            );
+
         }catch (DataAccessException exDt){
             return new ResponseEntity<>(
                     MensajeResponse.builder()

@@ -14,4 +14,5 @@ public class AuthResponse {
     String nombre;
     String apellido;
     String rol;
+    Integer empleadoId;
 }

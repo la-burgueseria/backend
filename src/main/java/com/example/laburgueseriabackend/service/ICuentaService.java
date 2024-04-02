@@ -13,8 +13,8 @@ public interface ICuentaService {
     Cuenta findById(Integer id);
     void delete(Cuenta cuenta);
     List<Cuenta> listAll();
-
     Boolean existsById(Integer id);
     Page<Cuenta> cuentasPaginadas(Pageable pageable);
     List<Cuenta> getcuentasByFecha(LocalDateTime fechaInicio, LocalDateTime fechaFin);
+    List<Cuenta> getCuentasByEmpleado(Integer empleadoId, LocalDateTime fechaInicio, LocalDateTime fechaFin);
 }

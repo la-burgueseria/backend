@@ -1,6 +1,7 @@
 package com.example.laburgueseriabackend.model.dao;
 
 import com.example.laburgueseriabackend.model.entity.Cuenta;
+import com.example.laburgueseriabackend.model.entity.EmpleadoCuenta;
 import org.springframework.cglib.core.Local;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,4 +15,7 @@ public interface CuentaDao extends JpaRepository<Cuenta, Integer> {
     //obtener cuentas por fecha
     @Query("SELECT c FROM Cuenta  c WHERE c.fecha >= :fechaInicio AND c.fecha <= :fechaFin ORDER BY c.fecha ASC")
     List<Cuenta> getcuentasByFecha(LocalDateTime fechaInicio, LocalDateTime fechaFin);
+    //obtener las cuentas de un empleado dado filtradas por fecha
+    @Query("SELECT ec.cuenta FROM EmpleadoCuenta ec WHERE ec.empleado.id = :empleadoId AND ec.cuenta.fecha >= :fechaInicio AND ec.cuenta.fecha <= :fechaFin ORDER BY ec.cuenta.fecha ASC")
+    List<Cuenta> getCuentasByEmpleado(Integer empleadoId, LocalDateTime fechaInicio, LocalDateTime fechaFin);
 }

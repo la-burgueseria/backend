@@ -27,6 +27,7 @@ public class AuthImplService implements IAuthService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final EmpleadoDao empleadoDao;
 
     @Override
     public AuthResponse login(UsuariosDto request) {
@@ -35,7 +36,7 @@ public class AuthImplService implements IAuthService {
             UserDetails user = usuariosDao.findByUsername(request.getUsername()).orElseThrow();
             Usuarios usuario = usuariosDao.findByUsername(request.getUsername()).orElseThrow();
             String token = jwtService.getToken(user);
-
+            Empleado empleado = empleadoDao.findEmpleadosByDocumento(request.getUsername());
             // Verificar si el token está caducado
             if (jwtService.isTokenExpired(token)) {
                 // Generar un nuevo token
@@ -47,6 +48,7 @@ public class AuthImplService implements IAuthService {
                     .nombre(usuario.getNombre())
                     .apellido(usuario.getApellido())
                     .rol(String.valueOf(usuario.getRol()))
+                    .empleadoId(empleado.getId())
                     .build();
 
     }
