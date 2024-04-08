@@ -135,6 +135,7 @@ com\example\laburgueseriabackend\model\dao\GestionCajaDao.class
 com\example\laburgueseriabackend\model\dao\MesaDao.class
 com\example\laburgueseriabackend\model\dto\ResumenGestionCajaDTO.class
 com\example\laburgueseriabackend\model\entity\CategoriaProducto$CategoriaProductoBuilder.class
+com\example\laburgueseriabackend\controller\auth\TokenGenerator.class
 com\example\laburgueseriabackend\controller\auth\AuthResponse.class
 com\example\laburgueseriabackend\model\entity\EstadoCuenta.class
 com\example\laburgueseriabackend\model\dao\CuentaProductosDao.class

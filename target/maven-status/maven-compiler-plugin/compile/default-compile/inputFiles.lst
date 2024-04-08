@@ -87,6 +87,7 @@ D:\dev\sena\proyecto formativo sena\laburgueseria\backend\src\main\java\com\exam
 D:\dev\sena\proyecto formativo sena\laburgueseria\backend\src\main\java\com\example\laburgueseriabackend\model\entity\GestionCaja.java
 D:\dev\sena\proyecto formativo sena\laburgueseria\backend\src\main\java\com\example\laburgueseriabackend\service\impl\CuentaProductosImplService.java
 D:\dev\sena\proyecto formativo sena\laburgueseria\backend\src\main\java\com\example\laburgueseriabackend\service\IGestionCajaService.java
+D:\dev\sena\proyecto formativo sena\laburgueseria\backend\src\main\java\com\example\laburgueseriabackend\controller\auth\TokenGenerator.java
 D:\dev\sena\proyecto formativo sena\laburgueseria\backend\src\main\java\com\example\laburgueseriabackend\service\IAuthService.java
 D:\dev\sena\proyecto formativo sena\laburgueseria\backend\src\main\java\com\example\laburgueseriabackend\service\impl\ProductoimplService.java
 D:\dev\sena\proyecto formativo sena\laburgueseria\backend\src\main\java\com\example\laburgueseriabackend\controller\CuentaController.java
