@@ -21,7 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:4200", "https://laburgueseria-ed758.web.app"})
+@CrossOrigin(origins = "*")
 public class AuthController {
 
     private final AuthImplService authService;
@@ -31,6 +31,7 @@ public class AuthController {
 
     @PostMapping("login")
     public ResponseEntity<?> login(@RequestBody UsuariosDto request){
+        System.out.println(request + "<=====");
         Usuarios usuario = this.authService.getUsuarioByDocumento(request.getUsername());
         if(usuario.getEstado()){
             return ResponseEntity.ok(authService.login(request));

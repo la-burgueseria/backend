@@ -15,10 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController //especificar que esta clase es un controller
 @RequestMapping("/api/v1") //asignacion de la ruta para ser consumido
-@CrossOrigin(origins = {"http://localhost:4200", "https://laburgueseria-ed758.web.app"})
+@CrossOrigin(origins = "*")
 public class InsumoController {
 
     @Autowired //inyeccion de dependencias del servicio
@@ -130,52 +131,65 @@ public class InsumoController {
     //ACTUALIZAR INSUMO
     @PutMapping("insumo/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> update(@RequestBody InsumoDto insumoDto, @PathVariable Integer id){
-        Insumo insumoUpdate = null;
-        Insumo insumobyNombre = null;
-        try{
-
-            if(insumoService.existsById(id)){
+    public ResponseEntity<?> update(@RequestBody InsumoDto insumoDto, @PathVariable Integer id) {
+        try {
+            // Verificar si el insumo con el ID proporcionado existe
+            if (insumoService.existsById(id)) {
+                // Establecer el ID del DTO con el ID del path
                 insumoDto.setId(id);
-                insumobyNombre = this.insumoService.findByNombre(insumoDto.getNombre());
-                if(insumobyNombre != null){
+
+                // Buscar un insumo por su nombre
+                Insumo insumobyNombre = this.insumoService.findByNombre(insumoDto.getNombre());
+
+                // Verificar si se encontró un insumo con el mismo nombre y diferente ID
+                if (insumobyNombre != null && !Objects.equals(insumoDto.getId(), insumobyNombre.getId())) {
+                    // Si el insumo encontrado tiene un ID diferente, devolver un mensaje de conflicto
                     return new ResponseEntity<>(
                             MensajeResponse.builder()
-                                    .mensaje("Ya existe este insumo con este nombre")
+                                    .mensaje("Ya existe un insumo con este nombre")
                                     .object(null)
-                                    .build()
-                            , HttpStatus.CONFLICT
+                                    .build(),
+                            HttpStatus.CONFLICT
                     );
                 }
-                insumoUpdate = insumoService.save(insumoDto);
 
-                return new ResponseEntity<>(MensajeResponse.builder()
-                        .mensaje("Actualizado correctamente")
-                        .object(InsumoDto.builder()
-                                .id(insumoUpdate.getId())
-                                .nombre(insumoUpdate.getNombre())
-                                .cantidad(insumoUpdate.getCantidad())
-                                .build())
-                        .build()
-                        , HttpStatus.CREATED
+                // Guardar el insumo actualizado
+                Insumo insumoUpdate = insumoService.save(insumoDto);
+
+                // Devolver una respuesta exitosa con el insumo actualizado
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("Actualizado correctamente")
+                                .object(InsumoDto.builder()
+                                        .id(insumoUpdate.getId())
+                                        .nombre(insumoUpdate.getNombre())
+                                        .cantidad(insumoUpdate.getCantidad())
+                                        .build())
+                                .build(),
+                        HttpStatus.CREATED
                 );
-            }else{
-                return new ResponseEntity<>(MensajeResponse.builder()
-                        .mensaje("Registro no encontrado en la base de datos")
-                        .object(null)
-                        .build()
-                        , HttpStatus.NOT_FOUND
+            } else {
+                // Si el insumo con el ID proporcionado no existe, devolver un mensaje de no encontrado
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("Registro no encontrado en la base de datos")
+                                .object(null)
+                                .build(),
+                        HttpStatus.NOT_FOUND
                 );
             }
-        }catch(DataAccessException exDt){
-            return new ResponseEntity<>(MensajeResponse.builder()
-                    .mensaje(exDt.getMessage())
-                    .object(null)
-                    .build()
-                    , HttpStatus.INTERNAL_SERVER_ERROR
+        } catch (DataAccessException exDt) {
+            // Si ocurre una excepción al acceder a los datos, devolver un mensaje de error interno del servidor
+            return new ResponseEntity<>(
+                    MensajeResponse.builder()
+                            .mensaje(exDt.getMessage())
+                            .object(null)
+                            .build(),
+                    HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
     }
+
 
     //ELIMINAR INSUMO
     @DeleteMapping("insumo/{id}")
