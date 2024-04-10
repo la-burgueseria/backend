@@ -33,6 +33,7 @@ public class InsumoImplService implements IInsumoService {
                 .id(insumoDto.getId())
                 .nombre(insumoDto.getNombre())
                 .cantidad(insumoDto.getCantidad())
+                .precioCompraUnidad(insumoDto.getPrecioCompraUnidad())
                 .build();
         //implementacion del metodo de CrudRepository
         //el save() tiene dos funciones = guardar registro y actualizar registro

@@ -82,6 +82,7 @@ public class InsumoController {
                 Integer cantidadExistencia = insumoExists.getCantidad() + insumoDto.getCantidad();
 
                 insumoExists.setCantidad(cantidadExistencia);
+                insumoExists.setPrecioCompraUnidad(insumoDto.getPrecioCompraUnidad());
                 Integer id1 = insumoDto.getId();
                 Integer id2 = insumoExists.getId();
 
@@ -90,6 +91,7 @@ public class InsumoController {
                         .id(insumoExists.getId())
                         .nombre(insumoExists.getNombre())
                         .cantidad(insumoExists.getCantidad())
+                        .precioCompraUnidad(insumoExists.getPrecioCompraUnidad())
                         .build();
 
                 insumoSave = insumoService.save(insumoDto);
@@ -107,6 +109,7 @@ public class InsumoController {
                         .id(insumoSave.getId())
                         .nombre(insumoSave.getNombre())
                         .cantidad(insumoSave.getCantidad())
+                        .precioCompraUnidad(insumoSave.getPrecioCompraUnidad())
                         .build();
 
                 return new ResponseEntity<>(MensajeResponse.builder()
@@ -230,6 +233,7 @@ public class InsumoController {
                 .id(insumo.getId())
                 .nombre(insumo.getNombre())
                 .cantidad(insumo.getCantidad())
+                .precioCompraUnidad(insumo.getPrecioCompraUnidad())
                 .build();
 
         return new ResponseEntity<>(MensajeResponse

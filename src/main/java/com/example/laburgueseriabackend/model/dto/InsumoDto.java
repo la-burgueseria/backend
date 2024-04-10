@@ -15,5 +15,5 @@ public class InsumoDto implements Serializable {
     private Integer id;
     private String nombre;
     private Integer cantidad;
-
+    private Integer precioCompraUnidad;
 }

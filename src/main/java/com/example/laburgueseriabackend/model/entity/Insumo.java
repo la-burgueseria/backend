@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.Serializable;
 import java.util.List;
@@ -26,7 +27,9 @@ public class Insumo implements Serializable {
     private String nombre;
     @Column(name = "cantidad")
     private Integer cantidad;
-
+    @Column(name ="precioCompraUnidad")
+    @Value("0")
+    private Integer precioCompraUnidad;
     @JsonBackReference
     @JsonIgnore
     @OneToMany(mappedBy = "insumo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
