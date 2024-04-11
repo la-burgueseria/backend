@@ -51,7 +51,7 @@ public class EmpleadoCuentaImplService implements IEmpleadoCuentaService {
     }
 
     @Override
-    public EmpleadoCuenta empleadoEnCuenta(Integer id) {
-        return empleadoCuentaDao.empleadoEnCuenta(id);
+    public List<EmpleadoCuenta> empleadoEnCuenta(Integer id){
+        return (List<EmpleadoCuenta>) empleadoCuentaDao.empleadoEnCuenta(id);
     }
 }

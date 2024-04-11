@@ -12,5 +12,5 @@ public interface EmpleadoCuentaDao extends JpaRepository<EmpleadoCuenta, Integer
     List<EmpleadoCuenta> cuentasDeEmpleado(Integer id);
     //buscar empleado asociado a una cuenta
     @Query("SELECT ec FROM EmpleadoCuenta ec WHERE ec.cuenta.id = :id")
-    EmpleadoCuenta empleadoEnCuenta(Integer id);
+    List<EmpleadoCuenta> empleadoEnCuenta(Integer id);
 }

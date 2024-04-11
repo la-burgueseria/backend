@@ -126,21 +126,17 @@ public class EmpleadoCuentaController  {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> showByCuentaId(@PathVariable Integer id){
         try{
-            EmpleadoCuenta empleadoCuenta = empleadoCuentaService.empleadoEnCuenta(id);
+            List<EmpleadoCuenta> empleadoCuenta = empleadoCuentaService.empleadoEnCuenta(id);
 
             if(empleadoCuenta != null){
                 return new ResponseEntity<>(
                         MensajeResponse.builder()
                                 .mensaje("Ok, encontrado")
                                 .object(
-                                        EmpleadoCuentaDto.builder()
-                                                .id(empleadoCuenta.getId())
-                                                .cuenta(empleadoCuenta.getCuenta())
-                                                .empleado(empleadoCuenta.getEmpleado())
-                                                .build()
+                                        empleadoCuenta
                                 )
                                 .build()
-                        , HttpStatus.FOUND
+                        , HttpStatus.OK
                 );
             }
             return new ResponseEntity<>(MensajeResponse

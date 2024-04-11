@@ -19,4 +19,5 @@ public interface IMesaService {
     List<Mesa> listAll();
     Page<Mesa> mesasPaginadas(Pageable pageable);
     Boolean existsById(Integer id);
+    void changeOcupacionMesa(Integer id, Boolean isOcupada);
 }

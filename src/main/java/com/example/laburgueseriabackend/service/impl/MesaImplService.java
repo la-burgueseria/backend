@@ -26,6 +26,7 @@ public class MesaImplService implements IMesaService {
                     .numeroMesa(mesaDto.getNumeroMesa())
                     //estado por defecto siempre será disponible
                     .estado(mesaDto.getEstado())
+                    .isOcupada(mesaDto.getIsOcupada())
                     .qr(
                             Qr.builder()
                                     .id(mesaDto.getQr().getId())
@@ -41,6 +42,7 @@ public class MesaImplService implements IMesaService {
                     .numeroMesa(mesaDto.getNumeroMesa())
                     //estado por defecto siempre será disponible
                     .estado(mesaDto.getEstado())
+                    .isOcupada(mesaDto.getIsOcupada())
                     .qr(null)
                     .build();
         }
@@ -87,5 +89,10 @@ public class MesaImplService implements IMesaService {
     @Override
     public Boolean existsById(Integer id) {
         return mesaDao.existsById(id);
+    }
+
+    @Override
+    public void changeOcupacionMesa(Integer id, Boolean isOcupada) {
+        mesaDao.changeOcupacionMesa(id, isOcupada);
     }
 }

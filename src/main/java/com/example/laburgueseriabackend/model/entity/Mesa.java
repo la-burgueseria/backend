@@ -26,6 +26,8 @@ public class Mesa implements Serializable {
     private Integer numeroMesa;
     @Column(name = "estado")
     private String estado;
+    @Column(name = "is_ocupada")
+    private Boolean isOcupada;
     //relacion one to one con los códigos QR
     @OneToOne
     @JoinColumn(name = "qr_id")

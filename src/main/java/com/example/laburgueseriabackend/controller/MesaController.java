@@ -22,7 +22,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1")
-@CrossOrigin(origins = {"http://localhost:4200", "https://laburgueseria-ed758.web.app"})
+@CrossOrigin(origins = "*")
 public class MesaController {
     @Autowired
     private IMesaService mesaService;
@@ -166,11 +166,8 @@ public class MesaController {
                                                 .id(mesa.getId())
                                                 .numeroMesa(mesa.getNumeroMesa())
                                                 .estado(mesa.getEstado())
-                                                .qr(QrDto.builder()
-                                                        .id(mesa.getQr().getId())
-                                                        .ruta(mesa.getQr().getRuta())
-                                                        .url(mesa.getQr().getUrl())
-                                                        .build())
+                                                .isOcupada(mesa.getIsOcupada())
+                                                .qr(null)
                                                 .build()
                                 )
                                 .build()
@@ -247,6 +244,7 @@ public class MesaController {
                                                             .id(mesaUpdate.getId())
                                                             .numeroMesa(mesaUpdate.getNumeroMesa())
                                                             .estado(mesaUpdate.getEstado())
+                                                            .isOcupada(mesaUpdate.getIsOcupada())
                                                             .qr(null)
                                                             .build()
                                             )
@@ -271,6 +269,7 @@ public class MesaController {
                                                                     .id(mesaUpdate.getId())
                                                                     .numeroMesa(mesaUpdate.getNumeroMesa())
                                                                     .estado(mesaUpdate.getEstado())
+                                                                    .isOcupada(mesaUpdate.getIsOcupada())
                                                                     .qr(QrDto.builder()
                                                                             .id(mesaUpdate.getQr().getId())
                                                                             .ruta(mesaUpdate.getQr().getRuta())

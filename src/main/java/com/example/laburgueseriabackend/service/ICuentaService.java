@@ -17,4 +17,5 @@ public interface ICuentaService {
     Page<Cuenta> cuentasPaginadas(Pageable pageable);
     List<Cuenta> getcuentasByFecha(LocalDateTime fechaInicio, LocalDateTime fechaFin);
     List<Cuenta> getCuentasByEmpleado(Integer empleadoId, LocalDateTime fechaInicio, LocalDateTime fechaFin);
+    Cuenta getCuentasActivasByNumeroMesa(Integer numeroMesa);
 }

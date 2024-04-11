@@ -73,4 +73,9 @@ public class CuentaImplService implements ICuentaService {
     public List<Cuenta> getCuentasByEmpleado(Integer empleadoId, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
         return cuentaDao.getCuentasByEmpleado(empleadoId, fechaInicio, fechaFin);
     }
+
+    @Override
+    public Cuenta getCuentasActivasByNumeroMesa(Integer numeroMesa) {
+        return cuentaDao.getCuentasActivasByNumeroMesa(numeroMesa);
+    }
 }

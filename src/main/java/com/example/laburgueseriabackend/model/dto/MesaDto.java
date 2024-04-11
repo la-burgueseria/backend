@@ -17,6 +17,7 @@ public class MesaDto {
     private Integer numeroMesa;
     private QrDto qr;
     private String estado;
+    private Boolean isOcupada;
     @JsonIgnore
     private List<Cuenta> cuentas;
 }

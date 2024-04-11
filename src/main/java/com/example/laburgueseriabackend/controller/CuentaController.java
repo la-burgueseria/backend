@@ -3,9 +3,11 @@ package com.example.laburgueseriabackend.controller;
 import com.example.laburgueseriabackend.model.dto.CuentaDto;
 import com.example.laburgueseriabackend.model.entity.Cuenta;
 import com.example.laburgueseriabackend.model.entity.Empleado;
+import com.example.laburgueseriabackend.model.entity.Mesa;
 import com.example.laburgueseriabackend.model.payload.MensajeResponse;
 import com.example.laburgueseriabackend.service.ICuentaService;
 import com.example.laburgueseriabackend.service.IEmpleadoService;
+import com.example.laburgueseriabackend.service.IMesaService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -31,6 +33,8 @@ public class CuentaController {
     private ICuentaService cuentaService;
     @Autowired
     private IEmpleadoService empleadoService;
+    @Autowired
+    private IMesaService mesaService;
 
     //LISTAR TODAS LAS CUENTAS
     @GetMapping("cuentas")
@@ -70,26 +74,44 @@ public class CuentaController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> create(@RequestBody CuentaDto cuentaDto){
         Cuenta cuentaSave = null;
+        Mesa mesa = null;
         try{
-            cuentaSave = cuentaService.save(cuentaDto);
+            mesa = mesaService.findById(cuentaDto.getMesa().getId());
+            if(mesa.getIsOcupada()){
+                Cuenta cuentaExistente = cuentaService.getCuentasActivasByNumeroMesa(mesa.getNumeroMesa());
 
-            return new ResponseEntity<>(
-                    MensajeResponse.builder()
-                            .mensaje("Cuenta creada exitosamente")
-                            .object(
-                                    Cuenta.builder()
-                                            .id(cuentaSave.getId())
-                                            .fecha(cuentaSave.getFecha())
-                                            .estadoCuenta(cuentaDto.getEstadoCuenta())
-                                            .mesa(cuentaDto.getMesa())
-                                            .cuentaProductos(cuentaDto.getCuentaProductos())
-                                            .total(cuentaSave.getTotal())
-                                            .abono(cuentaSave.getAbono())
-                                            .build()
-                            )
-                            .build()
-                    , HttpStatus.CREATED
-            );
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("Ya existe una cuenta para esta mesa")
+                                .object(cuentaExistente)
+                                .build()
+                        , HttpStatus.OK
+                );
+            }else{
+                cuentaSave = cuentaService.save(cuentaDto);
+                //cambiar la mesa a ocupada
+                mesaService.changeOcupacionMesa(mesa.getId(), true);
+                return new ResponseEntity<>(
+                        MensajeResponse.builder()
+                                .mensaje("Cuenta creada exitosamente")
+                                .object(
+                                        Cuenta.builder()
+                                                .id(cuentaSave.getId())
+                                                .fecha(cuentaSave.getFecha())
+                                                .estadoCuenta(cuentaDto.getEstadoCuenta())
+                                                .mesa(cuentaDto.getMesa())
+                                                .cuentaProductos(cuentaDto.getCuentaProductos())
+                                                .total(cuentaSave.getTotal())
+                                                .abono(cuentaSave.getAbono())
+                                                .build()
+                                )
+                                .build()
+                        , HttpStatus.CREATED
+                );
+            }
+
+
+
         }catch (DataAccessException exDt){
             return new ResponseEntity<>(
                     MensajeResponse.builder()

@@ -18,4 +18,8 @@ public interface CuentaDao extends JpaRepository<Cuenta, Integer> {
     //obtener las cuentas de un empleado dado filtradas por fecha
     @Query("SELECT ec.cuenta FROM EmpleadoCuenta ec WHERE ec.empleado.id = :empleadoId AND ec.cuenta.fecha >= :fechaInicio AND ec.cuenta.fecha <= :fechaFin ORDER BY ec.cuenta.fecha ASC")
     List<Cuenta> getCuentasByEmpleado(Integer empleadoId, LocalDateTime fechaInicio, LocalDateTime fechaFin);
+
+    //buscar cuentas por numero de mesa y que la mesa este ocupada
+    @Query("SELECT c from Cuenta  c WHERE c.mesa.numeroMesa = :numeroMesa AND c.mesa.isOcupada = true AND (c.estadoCuenta.id != 2 AND c.estadoCuenta.id != 4)")
+    Cuenta getCuentasActivasByNumeroMesa(Integer numeroMesa);
 }
