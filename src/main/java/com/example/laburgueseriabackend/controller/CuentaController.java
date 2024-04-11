@@ -80,22 +80,15 @@ public class CuentaController {
             mesa = mesaService.findById(cuentaDto.getMesa().getId());
             if(mesa.getIsOcupada()){
                 Cuenta cuentaExistente = cuentaService.getCuentasActivasByNumeroMesa(mesa.getNumeroMesa());
-                cuentaExistente.getEstadoCuenta().setId(1); //asignar id para volverla a pendiente de gestion
-                cuentaSave = cuentaService.save(
-                        CuentaDto.builder()
-                                .id(cuentaExistente.getId())
-                                .estadoCuenta(
-                                        EstadoCuenta.builder()
-                                                .id(1)
-                                                .build()
-                                )
-                                .total(cuentaExistente.getTotal() + cuentaDto.getTotal())
-                                .build()
+                cuentaDto.setTotal(cuentaDto.getTotal() + cuentaExistente.getTotal());
+                cuentaDto.setId(cuentaExistente.getId());
+                cuentaDto.setFecha(cuentaExistente.getFecha());
+                cuentaSave = cuentaService.save(cuentaDto
                 );
                 return new ResponseEntity<>(
                         MensajeResponse.builder()
                                 .mensaje("Ya existe una cuenta para esta mesa")
-                                .object(cuentaExistente)
+                                .object(cuentaSave)
                                 .build()
                         , HttpStatus.OK
                 );
