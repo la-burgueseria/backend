@@ -3,6 +3,7 @@ package com.example.laburgueseriabackend.controller;
 import com.example.laburgueseriabackend.model.dto.CuentaDto;
 import com.example.laburgueseriabackend.model.entity.Cuenta;
 import com.example.laburgueseriabackend.model.entity.Empleado;
+import com.example.laburgueseriabackend.model.entity.EstadoCuenta;
 import com.example.laburgueseriabackend.model.entity.Mesa;
 import com.example.laburgueseriabackend.model.payload.MensajeResponse;
 import com.example.laburgueseriabackend.service.ICuentaService;
@@ -79,11 +80,15 @@ public class CuentaController {
             mesa = mesaService.findById(cuentaDto.getMesa().getId());
             if(mesa.getIsOcupada()){
                 Cuenta cuentaExistente = cuentaService.getCuentasActivasByNumeroMesa(mesa.getNumeroMesa());
-
+                cuentaDto.setTotal(cuentaDto.getTotal() + cuentaExistente.getTotal());
+                cuentaDto.setId(cuentaExistente.getId());
+                cuentaDto.setFecha(cuentaExistente.getFecha());
+                cuentaSave = cuentaService.save(cuentaDto
+                );
                 return new ResponseEntity<>(
                         MensajeResponse.builder()
                                 .mensaje("Ya existe una cuenta para esta mesa")
-                                .object(cuentaExistente)
+                                .object(cuentaSave)
                                 .build()
                         , HttpStatus.OK
                 );
