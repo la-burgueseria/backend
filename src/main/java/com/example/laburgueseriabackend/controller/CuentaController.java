@@ -3,6 +3,7 @@ package com.example.laburgueseriabackend.controller;
 import com.example.laburgueseriabackend.model.dto.CuentaDto;
 import com.example.laburgueseriabackend.model.entity.Cuenta;
 import com.example.laburgueseriabackend.model.entity.Empleado;
+import com.example.laburgueseriabackend.model.entity.EstadoCuenta;
 import com.example.laburgueseriabackend.model.entity.Mesa;
 import com.example.laburgueseriabackend.model.payload.MensajeResponse;
 import com.example.laburgueseriabackend.service.ICuentaService;
@@ -79,11 +80,15 @@ public class CuentaController {
             mesa = mesaService.findById(cuentaDto.getMesa().getId());
             if(mesa.getIsOcupada()){
                 Cuenta cuentaExistente = cuentaService.getCuentasActivasByNumeroMesa(mesa.getNumeroMesa());
-
+                cuentaDto.setTotal(cuentaDto.getTotal() + cuentaExistente.getTotal());
+                cuentaDto.setId(cuentaExistente.getId());
+                cuentaDto.setFecha(cuentaExistente.getFecha());
+                cuentaSave = cuentaService.save(cuentaDto
+                );
                 return new ResponseEntity<>(
                         MensajeResponse.builder()
                                 .mensaje("Ya existe una cuenta para esta mesa")
-                                .object(cuentaExistente)
+                                .object(cuentaSave)
                                 .build()
                         , HttpStatus.OK
                 );
@@ -174,15 +179,15 @@ public class CuentaController {
     {
         // Si la hora es menor a las 12 del medio dia, entonces le resta un dia y la asigna a las 12 del medio dia
         //en caso contrario simplemente asigna la hora de incio al medio dia
-        LocalDateTime fechaInicioConHora = fechaInicio.toLocalTime().isBefore(LocalTime.NOON)
-                ? fechaInicio.minusDays(1).with(LocalTime.NOON)
-                : fechaInicio.with(LocalTime.NOON);
+
+        LocalDateTime fechaInicioConHora = fechaInicio.with(LocalTime.MIN);
+
 
         /*
         * si fechaFin no es nulo, entonces usa fechaFin.plusDays(1).minusSeconds(1),
         *  de lo contrario, usa fechaInicioConHora.plusDays(1).minusSeconds(1)
         * */
-        LocalDateTime fechaFinConHora = (fechaFin != null) ? fechaFin.plusDays(1).minusSeconds(1) : fechaInicioConHora.plusDays(1).minusSeconds(1);
+        LocalDateTime fechaFinConHora = (fechaFin != null) ? fechaFin.with(LocalTime.MAX) : fechaInicioConHora.with(LocalTime.MAX);
 
         try{
             List<Cuenta> cuentas = cuentaService.getcuentasByFecha(fechaInicioConHora, fechaFinConHora);

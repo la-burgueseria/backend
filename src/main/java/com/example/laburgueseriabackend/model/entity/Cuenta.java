@@ -20,7 +20,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "cuenta")
-public class Cuenta implements Serializable {
+public class    Cuenta implements Serializable {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
