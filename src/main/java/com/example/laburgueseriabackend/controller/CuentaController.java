@@ -179,15 +179,15 @@ public class CuentaController {
     {
         // Si la hora es menor a las 12 del medio dia, entonces le resta un dia y la asigna a las 12 del medio dia
         //en caso contrario simplemente asigna la hora de incio al medio dia
-        LocalDateTime fechaInicioConHora = fechaInicio.toLocalTime().isBefore(LocalTime.NOON)
-                ? fechaInicio.minusDays(1).with(LocalTime.NOON)
-                : fechaInicio.with(LocalTime.NOON);
+
+        LocalDateTime fechaInicioConHora = fechaInicio.with(LocalTime.MIN);
+
 
         /*
         * si fechaFin no es nulo, entonces usa fechaFin.plusDays(1).minusSeconds(1),
         *  de lo contrario, usa fechaInicioConHora.plusDays(1).minusSeconds(1)
         * */
-        LocalDateTime fechaFinConHora = (fechaFin != null) ? fechaFin.plusDays(1).minusSeconds(1) : fechaInicioConHora.plusDays(1).minusSeconds(1);
+        LocalDateTime fechaFinConHora = (fechaFin != null) ? fechaFin.with(LocalTime.MAX) : fechaInicioConHora.with(LocalTime.MAX);
 
         try{
             List<Cuenta> cuentas = cuentaService.getcuentasByFecha(fechaInicioConHora, fechaFinConHora);
