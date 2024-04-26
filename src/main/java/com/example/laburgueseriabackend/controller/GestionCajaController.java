@@ -157,7 +157,7 @@ public class GestionCajaController {
     ){
         // Si la hora es menor a las 12 del medio dia, entonces le resta un dia y la asigna a las 12 del medio dia
         //en caso contrario simplemente asigna la hora de incio al medio dia
-        LocalDateTime fechaInicioConHora = fechaInicio.minusDays(1).with(LocalTime.MIN);
+        LocalDateTime fechaInicioConHora = fechaInicio.with(LocalTime.MIN);
 
         /*
          * si fechaFin no es nulo, entonces usa fechaFin.plusDays(1).minusSeconds(1),
